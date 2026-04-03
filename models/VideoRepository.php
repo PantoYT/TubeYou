@@ -37,4 +37,10 @@ class VideoRepository
         );
         $stmt->execute([$userId, $title, $description, $src, $thumbnail, $duration]);
     }
+
+    public function incrementViews(int $id): void
+    {
+        $stmt = $this->db->prepare("UPDATE videos SET views = views + 1 WHERE id = ?");
+        $stmt->execute([$id]);
+    }
 }

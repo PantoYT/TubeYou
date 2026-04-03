@@ -19,5 +19,6 @@ create table if not exists videos
     thumbnail varchar(255) not null,
     description text not null,
     duration int default 0,
-    createdAt timestamp default current_timestamp
+    createdAt timestamp default current_timestamp,
+    views int default 0
 );

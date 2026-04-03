@@ -1,4 +1,6 @@
-<?php $title = htmlspecialchars($video['title']); ?>
+<?php
+$title = htmlspecialchars($video['title']); 
+?>
 
 <div class="watch-container">
     <div class="video-player">
@@ -10,7 +12,11 @@
     
     <div class="video-details">
         <h1><?= htmlspecialchars($video['title']) ?></h1>
-        <p class="video-meta">By <strong><?= htmlspecialchars($video['creatorName'] ?? 'Unknown') ?></strong> • Posted on <?= date('F j, Y', strtotime($video['createdAt'])) ?></p>
+        <p class="video-meta">
+            <strong><?= htmlspecialchars($video['creatorName'] ?? 'Unknown') ?></strong> • 
+            <?= $video['views'] ?? 0 ?> views • 
+            <?= date('F j, Y', strtotime($video['createdAt'])) ?>
+        </p>
         
         <div class="video-description">
             <p><?= nl2br(htmlspecialchars($video['description'])) ?></p>

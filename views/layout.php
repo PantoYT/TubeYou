@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'TubeYou' ?></title>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="/favicon.ico?v=1" type="image/x-icon">
 </head>
 <body>
     <nav class="navbar">

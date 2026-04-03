@@ -15,8 +15,11 @@
                     </a>
                     <div class="video-info">
                         <h3><a href="/watch?id=<?= $video['id'] ?>"><?= htmlspecialchars($video['title']) ?></a></h3>
-                        <p class="video-creator"><?= htmlspecialchars($video['creatorName'] ?? 'Unknown') ?></p>
-                        <p class="video-date"><?= date('M d, Y', strtotime($video['createdAt'])) ?></p>
+                        <p class="video-meta">
+                            <?= htmlspecialchars($video['creatorName'] ?? 'Unknown') ?>
+                            <?= $video['views'] ?? 0 ?> views
+                            <?= date('M d, Y', strtotime($video['createdAt'])) ?>
+                        </p>
                     </div>
                 </div>
             <?php endforeach; ?>

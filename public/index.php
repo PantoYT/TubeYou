@@ -40,6 +40,9 @@ if (isset($routes[$method][$uri])) {
                     render('errors/404');
                     exit;
                 }
+                
+                $videoRepo->incrementViews((int)$id);
+
                 render('main/watch', ['video' => $video]);
             })(),
             'search' => (function() use ($db, $videoRepo) {
