@@ -1,3 +1,5 @@
+drop database if exists tubeyou;
+
 create database if not exists tubeyou;
 use tubeyou;
 
@@ -20,5 +22,36 @@ create table if not exists videos
     description text not null,
     duration int default 0,
     createdAt timestamp default current_timestamp,
-    views int default 0
+    views int default 0,
+    index idx_videos_userId (userId)
 );
+
+create table if not exists likes
+(
+    userId int not null,
+    videoId int not null,
+    primary key (userId, videoId),
+    foreign key (userId) references users(id) on delete cascade,
+    foreign key (videoId) references videos(id) on delete cascade
+);
+
+create table if not exists subscribes
+(
+    subscriberId int not null,
+    subscribedToId int not null,
+    primary key (subscriberId, subscribedToId),
+    foreign key (subscriberId) references users(id) on delete cascade,
+    foreign key (subscribedToId) references users(id) on delete cascade,
+    check (subscriberId != subscribedToId)
+);
+
+create table if not exists comments
+(
+    id int primary key auto_increment,
+    userId int not null,
+    videoId int not null,
+    foreign key (userId) references users(id) on delete cascade,
+    foreign key (videoId) references videos(id) on delete cascade,
+    content text not null,
+    createdAt timestamp default current_timestamp
+)
