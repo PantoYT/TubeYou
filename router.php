@@ -1,12 +1,9 @@
 <?php
-// Simple router dla PHP CLI server
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// Ścieżka do pliku w public
 $file = __DIR__ . '/public' . $uri;
 
-// Jeśli plik istnieje → serwuj go bezpośrednio
 if ($uri !== '/' && file_exists($file) && is_file($file)) {
     $ext = pathinfo($file, PATHINFO_EXTENSION);
 
@@ -27,7 +24,6 @@ if ($uri !== '/' && file_exists($file) && is_file($file)) {
 
     $filesize = filesize($file);
 
-    // Range requests (video streaming)
     if (isset($_SERVER['HTTP_RANGE'])) {
         if (preg_match('/bytes=(\d+)-(\d*)/', $_SERVER['HTTP_RANGE'], $matches)) {
             $start = intval($matches[1]);
@@ -50,5 +46,4 @@ if ($uri !== '/' && file_exists($file) && is_file($file)) {
     exit;
 }
 
-// Wszystko inne → aplikacja
 require __DIR__ . '/public/index.php';

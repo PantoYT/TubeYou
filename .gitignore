@@ -1,2 +1,10 @@
-# Uploads
-/public/uploads/
+# .env
+.env
+
+# Uploads - you ain't getting my videos good sir/ma'am
+/public/uploads/videos/
+/public/uploads/thumbnails/
+/public/uploads/avatars/
+
+# Vendor
+/vendor/

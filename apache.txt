@@ -1,0 +1,25 @@
+0. Download XAMPP
+
+1. Have a .htaccess file:
+    Options -MultiViews
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+
+2. Edit Apache config -> httpd.conf => uncomment "LoadModule rewrite_module modules/mod_rewrite.so"
+
+3. New VirtualHost entry
+    at "C:\xampp\apache\conf\extra\httpd-vhosts.conf"
+    add this:
+    <VirtualHost *:80>
+        ServerName tubeyou.local
+        DocumentRoot "{insert_file_path_w_.htaccess}"
+        <Directory "{insert_file_path_w_.htaccess}">
+            AllowOverride All
+            Require all granted
+        </Directory>
+    </VirtualHost>
+    
+4. Edit "C:\Windows\System32\drivers\etc\hosts" as Admin (open notepad as admin then open via file path)
+    new entry: 127.0.0.1 tubeyou.local

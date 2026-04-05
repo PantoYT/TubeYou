@@ -14,6 +14,7 @@
     <?php endif; ?>
     
     <form method="POST" action="/register" class="auth-form">
+        <?= csrfField() ?>
         <div class="form-group">
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required autofocus>

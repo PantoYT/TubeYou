@@ -9,10 +9,15 @@ return [
         '/search' => ['controller' => 'VideoController', 'action' => 'search'],
         '/upload' => ['controller' => 'VideoController', 'action' => 'uploadForm'],
         '/logout' => ['controller' => 'AuthController', 'action' => 'logout'],
+        '/settings' => ['controller' => 'SettingsController', 'action' => 'index'],
+        '/verify' => ['controller' => 'AuthController', 'action' => 'verify'],
     ],
     'POST' => [
         '/login' => ['controller' => 'AuthController', 'action' => 'login'],
         '/register' => ['controller' => 'AuthController', 'action' => 'register'],
         '/upload' => ['controller' => 'VideoController', 'action' => 'upload'],
+        '/like/toggle' => ['controller' => 'LikeController','action' => 'toggle'],
+        '/sub/toggle' => ['controller' => 'SubController','action' => 'toggle'],
+        '/settings' => ['controller' => 'SettingsController', 'action' => 'update'],
     ]
 ];

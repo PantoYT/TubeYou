@@ -12,9 +12,10 @@ class VideoRepository
     public function findAll(): array
     {
         $stmt = $this->db->query(
-            "SELECT v.*, u.displayName as creatorName FROM videos v 
-             LEFT JOIN users u ON v.userId = u.id 
-             ORDER BY v.createdAt DESC"
+            "SELECT v.*, u.displayName as creatorName, u.avatar as creatorAvatar 
+            FROM videos v 
+            LEFT JOIN users u ON v.userId = u.id 
+            ORDER BY v.createdAt DESC"
         );
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -22,9 +23,9 @@ class VideoRepository
     public function findById(int $id): array|false
     {
         $stmt = $this->db->prepare(
-            "SELECT v.*, u.displayName as creatorName FROM videos v 
-             LEFT JOIN users u ON v.userId = u.id 
-             WHERE v.id = ?"
+            "SELECT v.*, u.displayName as creatorName, u.avatar as creatorAvatar  FROM videos v 
+            LEFT JOIN users u ON v.userId = u.id 
+            WHERE v.id = ?"
         );
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -42,5 +43,20 @@ class VideoRepository
     {
         $stmt = $this->db->prepare("UPDATE videos SET views = views + 1 WHERE id = ?");
         $stmt->execute([$id]);
+    }
+
+    public function search(string $query): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT v.*, u.displayName as creatorName, u.avatar as creatorAvatar
+            FROM videos v
+            JOIN users u ON v.userId = u.id
+            WHERE v.title LIKE ?
+                OR v.description LIKE ?
+            ORDER BY v.createdAt DESC"
+        );
+        $term = '%' . $query . '%';
+        $stmt->execute([$term, $term]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

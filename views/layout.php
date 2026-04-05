@@ -6,6 +6,7 @@
     <title><?= $title ?? 'TubeYou' ?></title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" href="/favicon.ico?v=1" type="image/x-icon">
+    <meta name="csrf" content="<?= csrfToken() ?>">
 </head>
 <body>
     <nav class="navbar">
@@ -16,18 +17,50 @@
         <div class="navbar-center">
             <form action="/search" method="GET" class="search-form">
                 <input type="text" name="q" placeholder="Search videos..." required>
-                <button type="submit">Search</button>
+                <button type="submit">
+                    <img src="/images/icons/search.svg" class="nav-icon nav-icon-white">
+                </button>
             </form>
         </div>
         
         <div class="navbar-right">
             <?php if (isset($_SESSION['user'])): ?>
-                <span class="user-welcome"><?= htmlspecialchars($_SESSION['user']['displayName']) ?></span>
-                <a href="/upload" class="btn btn-primary">Upload</a>
-                <a href="/logout" class="btn btn-danger">Logout</a>
+                <a href="/upload" class="btn btn-primary">
+                    <img src="/images/icons/plus.svg" class="nav-icon nav-icon-white">
+                    Upload
+                </a>
+
+                <!-- powiadomienia później tu -->
+
+                <div class="avatar-menu">
+                    <button class="avatar-trigger" id="avatar-trigger">
+                        <?= renderAvatar($_SESSION['user']['avatar'] ?? null, '32px') ?>
+                    </button>
+                    <div class="avatar-dropdown" id="avatar-dropdown">
+                        <div class="avatar-dropdown-header">
+                            <strong><?= htmlspecialchars($_SESSION['user']['displayName']) ?></strong>
+                        </div>
+                        <a href="/settings">Settings</a>
+                        <button id="theme-toggle" class="dropdown-theme-toggle">
+                            <img id="theme-icon" src="/images/icons/moon.svg" class="nav-icon">
+                            <span id="theme-label">Dark mode</span>
+                        </button>
+                        <a href="/logout">Logout</a>
+                    </div>
+                </div>
+
             <?php else: ?>
-                <a href="/login" class="btn">Login</a>
-                <a href="/register" class="btn btn-primary">Register</a>
+                <button id="theme-toggle" class="btn" style="padding:0.4rem 0.6rem;">
+                    <img id="theme-icon" src="/images/icons/moon.svg" class="nav-icon" style="margin:0;">
+                </button>
+                <a href="/login" class="btn">
+                    <img src="/images/icons/login.svg" class="nav-icon">
+                    Login
+                </a>
+                <a href="/register" class="btn btn-primary">
+                    <img src="/images/icons/plus.svg" class="nav-icon nav-icon-white">
+                    Register
+                </a>
             <?php endif; ?>
         </div>
     </nav>
@@ -40,4 +73,40 @@
         <p>&copy; 2026 TubeYou. All rights reserved.</p>
     </footer>
 </body>
+<script>
+(function() {
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark');
+    }
+})();
+
+const toggle = document.getElementById('theme-toggle');
+const icon   = document.getElementById('theme-icon');
+
+function updateIcon(isDark) {
+    icon.src = isDark ? '/images/icons/sun.svg' : '/images/icons/moon.svg';
+}
+
+updateIcon(document.body.classList.contains('dark'));
+
+toggle?.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    updateIcon(isDark);
+});
+
+const avatarTrigger  = document.getElementById('avatar-trigger');
+const avatarDropdown = document.getElementById('avatar-dropdown');
+
+avatarTrigger?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    avatarDropdown.classList.toggle('open');
+});
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.avatar-menu')) {
+        avatarDropdown?.classList.remove('open');
+    }
+});
+</script>
 </html>

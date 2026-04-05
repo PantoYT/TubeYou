@@ -7,40 +7,13 @@ class Database
 
     private function __construct()
     {
-        $tempConn = new PDO(
-            'mysql:host=localhost',
-            'root',
-            ''
-        );
-        $tempConn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        $schema = file_get_contents(__DIR__ . '/schema.sql');
-        foreach (explode(';', $schema) as $query) {
-            $query = trim($query);
-            if (!empty($query)) {
-                $tempConn->exec($query);
-            }
-        }
-
-        $checkStmt = $tempConn->prepare("SELECT COUNT(*) FROM tubeyou.users");
-        $checkStmt->execute();
-        if ($checkStmt->fetchColumn() == 0) {
-            $seed = file_get_contents(__DIR__ . '/seed.sql');
-            foreach (explode(';', $seed) as $query) {
-                $query = trim($query);
-                if (!empty($query)) {
-                    $tempConn->exec($query);
-                }
-            }
-        }
-
         $this->conn = new PDO(
-            'mysql:host=localhost;dbname=tubeyou',
+            'mysql:host=localhost;dbname=tubeyou;charset=utf8mb4',
             'root',
             ''
         );
-
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     }
 
     public static function getInstance(): Database
