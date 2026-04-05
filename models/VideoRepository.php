@@ -47,16 +47,35 @@ class VideoRepository
 
     public function search(string $query): array
     {
-        $stmt = $this->db->prepare(
-            "SELECT v.*, u.displayName as creatorName, u.avatar as creatorAvatar
-            FROM videos v
-            JOIN users u ON v.userId = u.id
-            WHERE v.title LIKE ?
-                OR v.description LIKE ?
-            ORDER BY v.createdAt DESC"
-        );
-        $term = '%' . $query . '%';
-        $stmt->execute([$term, $term]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $query = trim($query);
+
+        if (strlen($query) < 3) {
+            $stmt = $this->db->prepare(
+                "SELECT v.*, u.displayName as creatorName, u.avatar as creatorAvatar
+                FROM videos v
+                JOIN users u ON v.userId = u.id
+                WHERE v.title LIKE ? 
+                    OR v.description LIKE ?
+                ORDER BY v.createdAt DESC"
+            );
+
+            $term = '%' . $query . '%';
+            $stmt->execute([$term, $term]);
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            $stmt = $this->db->prepare(
+                "SELECT v.*, u.displayName as creatorName, u.avatar as creatorAvatar,
+                        MATCH(v.title, v.description) AGAINST (? IN NATURAL LANGUAGE MODE) as score
+                FROM videos v
+                JOIN users u ON v.userId = u.id
+                WHERE MATCH(v.title, v.description) AGAINST (? IN NATURAL LANGUAGE MODE)
+                ORDER BY score DESC"
+            );
+
+            $stmt->execute([$query, $query]);
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
     }
 }

@@ -29,7 +29,7 @@ class MailService
         $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host   = $_SERVER['HTTP_HOST'];
         $link   = $scheme . '://' . $host . '/verify?token=' . $token;
-
+        $this->mail->clearAddresses();
         $this->mail->addAddress($toEmail, $toName);
         $this->mail->isHTML(true);
         $this->mail->Subject = 'Verify your TubeYou account';

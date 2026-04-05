@@ -5,15 +5,15 @@ use tubeyou;
 
 create table if not exists users
 (
-id int primary key auto_increment,
-email varchar(255) not null unique,
-displayName varchar(255) not null,
-password varchar(255) not null,
-avatar varchar(255),
-bio text,
-createdAt timestamp default current_timestamp,
-emailVerified TINYINT(1) default 0,
-verifyToken varchar(64) default null
+    id int primary key auto_increment,
+    email varchar(255) not null unique,
+    displayName varchar(255) not null,
+    password varchar(255) not null,
+    avatar varchar(255),
+    bio text,
+    createdAt timestamp default current_timestamp,
+    emailVerified TINYINT(1) default 0,
+    verifyToken varchar(64) default null
 );
 
 create table if not exists videos
@@ -27,8 +27,9 @@ create table if not exists videos
     description text not null,
     duration int default 0,
     createdAt timestamp default current_timestamp,
-    views int default 0,
-    index idx_videos_userId (userId)
+    views bigint default 0,
+    index idx_videos_userId (userId),
+    fulltext idx_fulltext_title_desc (title, description)
 );
 
 create table if not exists likes
@@ -38,7 +39,8 @@ create table if not exists likes
     primary key (userId, videoId),
     foreign key (userId) references users(id) on delete cascade,
     foreign key (videoId) references videos(id) on delete cascade,
-    type TINYINT not null
+    type TINYINT not null,
+    check (type in (1, -1))
 );
 
 create table if not exists subscribes
