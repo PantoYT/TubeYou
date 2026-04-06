@@ -42,7 +42,6 @@ class LikeRepository
             return false;
         }
 
-        // był like → zmień na dislike
         $this->updateLike($userId, $videoId, -1);
         return true;
     }
