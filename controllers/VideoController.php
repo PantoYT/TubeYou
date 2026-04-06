@@ -5,11 +5,13 @@ class VideoController
     private VideoRepository $videoRepo;
     private LikeRepository $likeRepo;
     private SubRepository $subRepo;
+    private CommentRepository $commentRepo;
 
-    public function __construct(VideoRepository $videoRepo, LikeRepository $likeRepo, SubRepository $subRepo) {
+    public function __construct(VideoRepository $videoRepo, LikeRepository $likeRepo, SubRepository $subRepo, CommentRepository $commentRepo) {
         $this->videoRepo = $videoRepo;
         $this->likeRepo = $likeRepo;
         $this->subRepo = $subRepo;
+        $this->commentRepo = $commentRepo;
     }
 
     public function homepage()
@@ -20,8 +22,12 @@ class VideoController
 
     public function watch()
     {
+
         $id = $_GET['id'] ?? null;
         $video = $this->videoRepo->findById((int)$id);
+
+        $comments     = $this->commentRepo->getForVideo((int)$id);
+        $commentCount = $this->commentRepo->count((int)$id);
 
         if (!$video) {
             http_response_code(404);
@@ -59,6 +65,8 @@ class VideoController
             'dislikeCount' => $dislikeCount,
             'isSubbed'     => $isSubbed,
             'subCount'     => $subCount,
+            'comments'     => $comments,
+            'commentCount' => $commentCount,
         ]);
     }
 

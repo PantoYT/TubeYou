@@ -55,11 +55,24 @@ create table if not exists subscribes
 
 create table if not exists comments
 (
-    id int primary key auto_increment,
-    userId int not null,
-    videoId int not null,
-    foreign key (userId) references users(id) on delete cascade,
-    foreign key (videoId) references videos(id) on delete cascade,
-    content text not null,
-    createdAt timestamp default current_timestamp
-)
+    id        int primary key auto_increment,
+    userId    int not null,
+    videoId   int not null,
+    parentId  int default null,
+    pinned    tinyint(1) default 0,
+    content   text not null,
+    createdAt timestamp default current_timestamp,
+    foreign key (userId)   references users(id)    on delete cascade,
+    foreign key (videoId)  references videos(id)   on delete cascade,
+    foreign key (parentId) references comments(id) on delete cascade
+);
+
+create table if not exists commentLikes
+(
+    userId    int not null,
+    commentId int not null,
+    type      tinyint not null check (type in (1, -1)),
+    primary key (userId, commentId),
+    foreign key (userId)    references users(id)    on delete cascade,
+    foreign key (commentId) references comments(id) on delete cascade
+);

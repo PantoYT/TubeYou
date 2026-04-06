@@ -23,11 +23,13 @@ if (isset($routes[$method][$uri])) {
             (
             $videoRepo,
             $likeRepo,
-            $subRepo
+            $subRepo,
+            $commentRepo
             ),
         'LikeController' => new LikeController($likeRepo),
         'SubController' => new SubController($subRepo),
         'SettingsController' => new SettingsController($userRepo),
+        'CommentController' => new CommentController($commentRepo),
         default => null
     };
 

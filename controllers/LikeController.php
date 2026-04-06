@@ -21,7 +21,7 @@ class LikeController
         $videoId = (int)($_POST['videoId'] ?? 0);
         $type    = (int)($_POST['type'] ?? 1);
 
-        if ($type === 2) {
+        if ($type === -1) {
             $active = $this->likeRepo->toggleDislike($userId, $videoId);
         } else {
             $active = $this->likeRepo->toggleLike($userId, $videoId);

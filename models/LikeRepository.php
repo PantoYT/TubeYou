@@ -33,17 +33,17 @@ class LikeRepository
         $existing = $this->getLike($userId, $videoId);
 
         if (!$existing) {
-            $this->addLike($userId, $videoId, 2);
+            $this->addLike($userId, $videoId, -1);
             return true;
         }
 
-        if ((int)$existing['type'] === 2) {
+        if ((int)$existing['type'] === -1) {
             $this->removeLike($userId, $videoId);
             return false;
         }
 
         // był like → zmień na dislike
-        $this->updateLike($userId, $videoId, 2);
+        $this->updateLike($userId, $videoId, -1);
         return true;
     }
 
@@ -89,7 +89,7 @@ class LikeRepository
     public function isDisliked(int $userId, int $videoId): bool
     {
         $like = $this->getLike($userId, $videoId);
-        return $like && (int)$like['type'] === 2;
+        return $like && (int)$like['type'] === -1;
     }
 
     public function countLikes(int $videoId): int
@@ -104,7 +104,7 @@ class LikeRepository
     public function countDislikes(int $videoId): int
     {
         $stmt = $this->db->prepare(
-            "SELECT COUNT(*) FROM likes WHERE videoId = ? AND type = 2"
+            "SELECT COUNT(*) FROM likes WHERE videoId = ? AND type = -1"
         );
         $stmt->execute([$videoId]);
         return (int)$stmt->fetchColumn();

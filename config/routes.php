@@ -19,5 +19,9 @@ return [
         '/like/toggle' => ['controller' => 'LikeController','action' => 'toggle'],
         '/sub/toggle' => ['controller' => 'SubController','action' => 'toggle'],
         '/settings' => ['controller' => 'SettingsController', 'action' => 'update'],
+        '/comment/store'  => ['controller' => 'CommentController', 'action' => 'store'],
+        '/comment/delete' => ['controller' => 'CommentController', 'action' => 'delete'],
+        '/comment/pin'    => ['controller' => 'CommentController', 'action' => 'pin'],
+        '/comment/like'   => ['controller' => 'CommentController', 'action' => 'like'],
     ]
 ];
