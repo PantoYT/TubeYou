@@ -488,7 +488,7 @@ body {
 
 .watch-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 360px;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
     gap: 2rem;
     align-items: start;
     margin: 2rem 0;
@@ -875,6 +875,76 @@ footer {
     font-size: 0.85rem;
 }
 
+/* ── Pagination ──────────────────────────────── */
+
+.pagination {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+/* ── Suggested ───────────────────────────────── */
+
+.suggested-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.suggested-card {
+    display: flex;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--text);
+    border-radius: var(--radius);
+    transition: background 0.15s;
+    padding: 6px;
+}
+
+.suggested-card:hover {
+    background: var(--border);
+}
+
+.suggested-thumb {
+    position: relative;
+    width: 200px;
+    min-width: 200px;
+    aspect-ratio: 16/9;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #000;
+}
+
+.suggested-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.suggested-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.suggested-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.suggested-meta {
+    font-size: .9rem;
+    color: var(--text-muted);
+}
+
 /* ── Dark mode ───────────────────────────────── */
 
 body.dark {
@@ -933,6 +1003,7 @@ body.dark .comment-action-btn .nav-icon { filter: brightness(0) invert(0.7); }
 body.dark .comment-delete { color: #f09595; }
 body.dark .comment-delete:hover { background: #2a1111; color: #f09595; }
 body.dark .replies { border-color: #2a2a2a; }
+body.dark .suggested-card:hover { background: #1a1a1a; }
 
 /* ── Responsive ──────────────────────────────── */
 

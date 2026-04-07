@@ -10,6 +10,7 @@ create table if not exists users
     displayName varchar(255) not null,
     password varchar(255) not null,
     avatar varchar(255),
+    banner varchar(255),
     bio text,
     createdAt timestamp default current_timestamp,
     emailVerified TINYINT(1) default 0,

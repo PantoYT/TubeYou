@@ -1,10 +1,4 @@
-<?php
-function formatNumber($n) {
-    if ($n >= 1000000) return round($n/1000000, 1) . 'M';
-    if ($n >= 1000) return round($n/1000, 1) . 'K';
-    return $n;
-}
-?>
+<?php require_once __DIR__ . '/../../helpers/formatNumber.php'; ?>
 
 <div class="watch-layout">
 
@@ -230,6 +224,7 @@ function formatNumber($n) {
             </div>
 
         </div>
+        <?= renderPagination($commentPage, $commentPages, '/watch?id=' . (int)$video['id'] . '&cpage=') ?>
 
         <script>
         document.querySelectorAll('.reply-toggle').forEach(btn => {
@@ -245,7 +240,24 @@ function formatNumber($n) {
 
     <div class="watch-sidebar">
         <p class="watch-sidebar-title">Up next</p>
-        <!-- propozycje filmów — następny krok -->
+        <div class="suggested-list">
+            <?php foreach ($suggested as $s): ?>
+                <a href="/watch?id=<?= $s['id'] ?>" class="suggested-card">
+                    <div class="suggested-thumb">
+                        <img src="<?= htmlspecialchars($s['thumbnail']) ?>"
+                            alt="<?= htmlspecialchars($s['title']) ?>">
+                        <span class="video-duration"><?= gmdate('i:s', $s['duration'] ?? 0) ?></span>
+                    </div>
+                    <div class="suggested-info">
+                        <p class="suggested-title"><?= htmlspecialchars($s['title']) ?></p>
+                        <p class="suggested-meta">
+                            <?= htmlspecialchars($s['creatorName']) ?> •
+                            <?= formatNumber($s['views']) ?> views
+                        </p>
+                    </div>
+                </a>
+            <?php endforeach; ?>
+        </div>
     </div>
 
 </div>

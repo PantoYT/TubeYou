@@ -1,8 +1,8 @@
 <?php $title = 'Home'; ?>
-
+<?php require_once __DIR__ . '/../../helpers/formatNumber.php'; ?>
 <div class="homepage">
     <?php if (empty($videos)): ?>
-        <div class="alert alert-info">No videos yet. Come back later!</div>
+        <div class="alert alert-info">No videos yet.</div>
     <?php else: ?>
         <div class="video-grid">
             <?php foreach ($videos as $video): ?>
@@ -18,7 +18,7 @@
                             <?= renderAvatar($video['creatorAvatar'] ?? null, '24px') ?>
                             <p class="video-meta">
                                 <?= htmlspecialchars($video['creatorName'] ?? 'Unknown') ?> •
-                                <?= $video['views'] ?? 0 ?> views •
+                                <?= formatNumber($video['views'] ?? 0) ?> views •
                                 <?= date('M d, Y', strtotime($video['createdAt'])) ?>
                             </p>
                         </div>
@@ -26,5 +26,6 @@
                 </div>
             <?php endforeach; ?>
         </div>
+        <?= renderPagination($page, $pages, '/?page=') ?>
     <?php endif; ?>
 </div>

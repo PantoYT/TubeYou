@@ -6,8 +6,12 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 require_once __DIR__ . '/database/connection.php';
+
 require_once __DIR__ . '/helpers/csrf.php';
+
 require_once __DIR__ . '/views/partials/avatar.php';
+require_once __DIR__ . '/views/partials/pagination.php';
+
 require_once __DIR__ . '/services/MailService.php';
 
 foreach (glob(__DIR__ . '/models/*.php') as $file) require_once $file;

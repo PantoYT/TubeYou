@@ -78,4 +78,48 @@ class VideoRepository
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     }
+
+    public function findAllPaginated(int $page = 1, int $perPage = 12): array
+    {
+        $offset = ($page - 1) * $perPage;
+        $stmt = $this->db->prepare(
+            "SELECT v.*, u.displayName as creatorName, u.avatar as creatorAvatar,
+                    (v.views * 0.3 + 
+                    (SELECT COUNT(*) FROM likes WHERE videoId = v.id AND type = 1) * 0.5 +
+                    (100 / (TIMESTAMPDIFF(HOUR, v.createdAt, NOW()) + 1))) as score
+            FROM videos v
+            LEFT JOIN users u ON v.userId = u.id
+            ORDER BY score DESC
+            LIMIT ? OFFSET ?"
+        );
+
+        $stmt->bindValue(1, $perPage, PDO::PARAM_INT);
+        $stmt->bindValue(2, $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function countAll(): int
+    {
+        return (int)$this->db->query("SELECT COUNT(*) FROM videos")->fetchColumn();
+    }
+
+    public function findSuggested(int $videoId, int $userId, int $limit = 10): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT v.*, u.displayName as creatorName, u.avatar as creatorAvatar,
+                    (v.views * 0.3 +
+                    (SELECT COUNT(*) FROM likes WHERE videoId = v.id AND type = 1) * 0.5 +
+                    (100 / (TIMESTAMPDIFF(HOUR, v.createdAt, NOW()) + 1))) as score
+            FROM videos v
+            LEFT JOIN users u ON v.userId = u.id
+            WHERE v.id != ?
+            ORDER BY score DESC
+            LIMIT ?"
+        );
+        $stmt->bindValue(1, $videoId, PDO::PARAM_INT);
+        $stmt->bindValue(2, $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

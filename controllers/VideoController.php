@@ -16,18 +16,23 @@ class VideoController
 
     public function homepage()
     {
-        $videos = $this->videoRepo->findAll();
-        render('main/homepage', ['videos' => $videos]);
+        $page    = max(1, (int)($_GET['page'] ?? 1));
+        $perPage = 12;
+        $videos  = $this->videoRepo->findAllPaginated($page, $perPage);
+        $total   = $this->videoRepo->countAll();
+        $pages   = (int)ceil($total / $perPage);
+
+        render('main/homepage', [
+            'videos' => $videos,
+            'page'   => $page,
+            'pages'  => $pages,
+        ]);
     }
 
     public function watch()
     {
-
-        $id = $_GET['id'] ?? null;
+        $id    = $_GET['id'] ?? null;
         $video = $this->videoRepo->findById((int)$id);
-
-        $comments     = $this->commentRepo->getForVideo((int)$id);
-        $commentCount = $this->commentRepo->count((int)$id);
 
         if (!$video) {
             http_response_code(404);
@@ -41,15 +46,13 @@ class VideoController
             $_SESSION[$viewKey] = true;
         }
 
-        $userId = $_SESSION['user']['id'] ?? null;
-
-        $isLiked    = false;
-        $isDisliked = false;
+        $userId       = $_SESSION['user']['id'] ?? null;
+        $isLiked      = false;
+        $isDisliked   = false;
         $likeCount    = $this->likeRepo->countLikes((int)$id);
         $dislikeCount = $this->likeRepo->countDislikes((int)$id);
-
-        $isSubbed = false;
-        $subCount = $this->subRepo->countSubs($video['userId']);
+        $isSubbed     = false;
+        $subCount     = $this->subRepo->countSubs($video['userId']);
 
         if ($userId) {
             $isLiked    = $this->likeRepo->isLiked($userId, (int)$id);
@@ -57,16 +60,26 @@ class VideoController
             $isSubbed   = $this->subRepo->isSubbed($userId, $video['userId']);
         }
 
+        $commentPage  = max(1, (int)($_GET['cpage'] ?? 1));
+        $commentPerPage = 10;
+        $comments     = $this->commentRepo->getForVideoPaginated((int)$id, $commentPage, $commentPerPage);
+        $commentCount = $this->commentRepo->count((int)$id);
+        $commentPages = (int)ceil($commentCount / $commentPerPage);
+        $suggested    = $this->videoRepo->findSuggested((int)$id, $userId ?? 0);
+
         render('main/watch', [
-            'video'        => $video,
-            'isLiked'      => $isLiked,
-            'isDisliked'   => $isDisliked,
-            'likeCount'    => $likeCount,
-            'dislikeCount' => $dislikeCount,
-            'isSubbed'     => $isSubbed,
-            'subCount'     => $subCount,
-            'comments'     => $comments,
-            'commentCount' => $commentCount,
+            'video'         => $video,
+            'isLiked'       => $isLiked,
+            'isDisliked'    => $isDisliked,
+            'likeCount'     => $likeCount,
+            'dislikeCount'  => $dislikeCount,
+            'isSubbed'      => $isSubbed,
+            'subCount'      => $subCount,
+            'comments'      => $comments,
+            'commentCount'  => $commentCount,
+            'commentPage'   => $commentPage,
+            'commentPages'  => $commentPages,
+            'suggested'     => $suggested,
         ]);
     }
 
