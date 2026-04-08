@@ -2,9 +2,11 @@
 .env
 
 # Uploads - you ain't getting my videos good sir/ma'am
-/public/uploads/videos/
-/public/uploads/thumbnails/
-/public/uploads/avatars/
+# and p.s. they just take up to much space and git won't let me :(
+/public/uploads/videos/*
+/public/uploads/thumbnails/*
+/public/uploads/avatars/*
+/public/uploads/banners/*
 
 # Vendor
 /vendor/

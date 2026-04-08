@@ -113,4 +113,10 @@ class UserRepository
         $stmt = $this->db->prepare("DELETE FROM users WHERE id = ?");
         $stmt->execute([$id]);
     }
+
+    public function updateBanner(int $id, string $path): void
+    {
+        $stmt = $this->db->prepare("UPDATE users SET banner = ? WHERE id = ?");
+        $stmt->execute([$path, $id]);
+    }
 }

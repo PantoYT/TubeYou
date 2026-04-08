@@ -52,6 +52,18 @@ class SettingsController
             }
         }
 
+        if (isset($_FILES['banner']) && $_FILES['banner']['error'] === UPLOAD_ERR_OK) {
+            $file    = $_FILES['banner'];
+            $allowed = ['image/jpeg', 'image/png', 'image/webp'];
+            if (in_array($file['type'], $allowed) && $file['size'] <= 5 * 1024 * 1024) {
+                $dir = __DIR__ . '/../public/uploads/banners/' . $userId . '/';
+                if (!is_dir($dir)) mkdir($dir, 0755, true);
+                move_uploaded_file($file['tmp_name'], $dir . 'banner.png');
+                $this->userRepo->updateBanner($userId, '/uploads/banners/' . $userId . '/banner.png');
+                $_SESSION['user']['banner'] = '/uploads/banners/' . $userId . '/banner.png';
+            }
+        }
+
         if ($errors) {
             $user = $this->userRepo->findById($userId);
             render('settings/index', ['user' => $user, 'errors' => $errors]);

@@ -6,12 +6,23 @@ class VideoController
     private LikeRepository $likeRepo;
     private SubRepository $subRepo;
     private CommentRepository $commentRepo;
+    private FeedRepository $feedRepo;
+    private TagRepository $tagRepo;
 
-    public function __construct(VideoRepository $videoRepo, LikeRepository $likeRepo, SubRepository $subRepo, CommentRepository $commentRepo) {
+    public function __construct(
+    VideoRepository $videoRepo, 
+    LikeRepository $likeRepo, 
+    SubRepository $subRepo, 
+    CommentRepository $commentRepo, 
+    FeedRepository $feedRepo,
+    TagRepository $tagRepo
+    ) {
         $this->videoRepo = $videoRepo;
         $this->likeRepo = $likeRepo;
         $this->subRepo = $subRepo;
         $this->commentRepo = $commentRepo;
+        $this->feedRepo = $feedRepo;
+        $this->tagRepo     = $tagRepo;
     }
 
     public function homepage()
@@ -33,6 +44,7 @@ class VideoController
     {
         $id    = $_GET['id'] ?? null;
         $video = $this->videoRepo->findById((int)$id);
+        $tags  = $this->tagRepo->getForVideo((int)$id);
 
         if (!$video) {
             http_response_code(404);
@@ -58,6 +70,7 @@ class VideoController
             $isLiked    = $this->likeRepo->isLiked($userId, (int)$id);
             $isDisliked = $this->likeRepo->isDisliked($userId, (int)$id);
             $isSubbed   = $this->subRepo->isSubbed($userId, $video['userId']);
+            $this->feedRepo->recordHistory($userId, (int)$id);
         }
 
         $commentPage  = max(1, (int)($_GET['cpage'] ?? 1));
@@ -80,17 +93,23 @@ class VideoController
             'commentPage'   => $commentPage,
             'commentPages'  => $commentPages,
             'suggested'     => $suggested,
+            'tags'          => $tags,
         ]);
     }
 
     public function search()
     {
         $q = trim($_GET['q'] ?? '');
+        $page   = max(1, (int)($_GET['page'] ?? 1));
+        $perPage = 12;
         $videos = $q ? $this->videoRepo->search($q) : [];
+        $pages  = (int)ceil(count($videos) / $perPage);
 
         render('main/search', [
             'videos' => $videos,
             'query'  => $q,
+            'page'   => $page,
+            'pages'  => $pages,
         ]);
     }
     
@@ -148,12 +167,48 @@ class VideoController
         move_uploaded_file($videoFile['tmp_name'],     $videoDir . $videoName);
         move_uploaded_file($thumbnailFile['tmp_name'], $thumbnailDir . $thumbnailName);
 
+        $input  = $videoDir . $videoName;
+        $output = $videoDir . 'thumb_auto.jpg';
+
+        shell_exec(
+            "ffmpeg -i " . escapeshellarg($input) .
+            " -ss 00:00:03 -vframes 1 " .
+            escapeshellarg($output) . " 2>&1"
+        );
+
+        $qualities = [
+            '1080p' => '1920x1080',
+            '720p'  => '1280x720',
+            '480p'  => '854x480',
+            '360p'  => '640x360',
+        ];
+
+        foreach ($qualities as $label => $size) {
+            shell_exec(
+                "ffmpeg -i " . escapeshellarg($input) .
+                " -vf scale={$size} -c:v libx264 -crf 23 " .
+                escapeshellarg($videoDir . $label . '.mp4') . " 2>&1"
+            );
+        }
+
         $videoSrc     = '/uploads/videos/'     . $userId . '/' . $videoName;
         $thumbnailSrc = '/uploads/thumbnails/' . $userId . '/' . $thumbnailName;
 
         $this->videoRepo->save($userId, $title, $description, $videoSrc, $thumbnailSrc);
+        $videoId = (int)$this->videoRepo->lastInsertId();
+        $tags    = trim($_POST['tags'] ?? '');
+        if ($tags) {
+            $this->tagRepo->syncTags($videoId, $tags);
+        }
 
         header('Location: /');
         exit;
+    }
+
+    public function tag()
+    {
+        $name   = trim($_GET['name'] ?? '');
+        $videos = $name ? $this->tagRepo->getVideosByTag($name) : [];
+        render('main/tag', ['videos' => $videos, 'tag' => $name]);
     }
 }

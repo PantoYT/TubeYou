@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../bootstrap.php';
 
 function render($view, $data = []) {
+    $GLOBALS['_view_data'] = $data;
     extract($data);
     ob_start();
     require __DIR__ . "/../views/$view.php";
@@ -19,12 +20,13 @@ if (isset($routes[$method][$uri])) {
     
     $controller = match ($route['controller']) {
         'AuthController' => new AuthController($userRepo),
-        'VideoController' => new VideoController($videoRepo,$likeRepo,$subRepo,$commentRepo),
+        'VideoController' => new VideoController($videoRepo,$likeRepo,$subRepo,$commentRepo,$feedRepo, $tagRepo),
         'LikeController' => new LikeController($likeRepo),
         'SubController' => new SubController($subRepo),
         'SettingsController' => new SettingsController($userRepo),
         'CommentController' => new CommentController($commentRepo),
         'ChannelController' => new ChannelController($userRepo, $videoRepo, $subRepo),
+        'FeedController' => new FeedController($feedRepo),
         default => null
     };
 

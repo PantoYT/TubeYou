@@ -1,8 +1,8 @@
 use tubeyou;
 
-insert into users (email, displayName, password, avatar, bio, emailVerified) values
+insert into users (email, displayName, password, avatar, bio, emailVerified,banner) values
 -- password: pass123
-('panto@tubeyou.com','Panto','$2y$10$cfM2MzNC3QW0calwvXy8tOiD03glK9KpKdVCcFTtYfQIjUtm335h2','/uploads/avatars/1/avatar.png','Cześć! Jestem Panto, {insert rest of bio here}',1);
+('panto@tubeyou.com','Panto','$2y$10$cfM2MzNC3QW0calwvXy8tOiD03glK9KpKdVCcFTtYfQIjUtm335h2','/uploads/avatars/1/avatar.png','Cześć! Jestem Panto, {insert rest of bio here}',1,'/uploads/banners/1/banner.png');
 
 insert into videos (title, src, userId, thumbnail, description, duration) values
 ('I like the way you kiss me','/uploads/videos/1/69ce646e471917.68634994.mp4',1,'/uploads/thumbnails/1/69ce646e471917.68634994.jpg','Fajny opis z kolejnego montażu z valoranta! Zapraszam do oglądania :D',110),

@@ -60,36 +60,35 @@ class VideoRepository
 
     public function search(string $query): array
     {
-        $query = trim($query);
-
         if (strlen($query) < 3) {
             $stmt = $this->db->prepare(
-                "SELECT v.*, u.displayName as creatorName, u.avatar as creatorAvatar
+                "SELECT DISTINCT v.*, u.displayName as creatorName, u.avatar as creatorAvatar
                 FROM videos v
                 JOIN users u ON v.userId = u.id
-                WHERE v.title LIKE ? 
-                    OR v.description LIKE ?
+                LEFT JOIN videoTags vt ON vt.videoId = v.id
+                LEFT JOIN tags t ON t.id = vt.tagId
+                WHERE v.title LIKE ? OR v.description LIKE ? OR t.name LIKE ?
                 ORDER BY v.createdAt DESC"
             );
-
             $term = '%' . $query . '%';
-            $stmt->execute([$term, $term]);
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->execute([$term, $term, $term]);
         } else {
             $stmt = $this->db->prepare(
-                "SELECT v.*, u.displayName as creatorName, u.avatar as creatorAvatar,
+                "SELECT DISTINCT v.*, u.displayName as creatorName, u.avatar as creatorAvatar,
                         MATCH(v.title, v.description) AGAINST (? IN NATURAL LANGUAGE MODE) as score
                 FROM videos v
                 JOIN users u ON v.userId = u.id
+                LEFT JOIN videoTags vt ON vt.videoId = v.id
+                LEFT JOIN tags t ON t.id = vt.tagId
                 WHERE MATCH(v.title, v.description) AGAINST (? IN NATURAL LANGUAGE MODE)
+                    OR t.name LIKE ?
                 ORDER BY score DESC"
             );
-
-            $stmt->execute([$query, $query]);
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $term = '%' . $query . '%';
+            $stmt->execute([$query, $query, $term]);
         }
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function findAllPaginated(int $page = 1, int $perPage = 12): array
@@ -134,5 +133,10 @@ class VideoRepository
         $stmt->bindValue(2, $limit, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function lastInsertId(): string
+    {
+        return $this->db->lastInsertId();
     }
 }

@@ -28,3 +28,5 @@ $likeRepo  = new LikeRepository($db);
 $subRepo   = new SubRepository($db);
 $commentRepo = new CommentRepository($db);
 $channelController = new ChannelController($userRepo, $videoRepo, $subRepo);
+$feedRepo = new FeedRepository($db);
+$tagRepo = new TagRepository($db);

@@ -14,6 +14,10 @@ return [
         '/channel' => ['controller' => 'ChannelController', 'action' => 'index'],
         '/forgot'        => ['controller' => 'AuthController', 'action' => 'forgotForm'],
         '/reset'         => ['controller' => 'AuthController', 'action' => 'resetForm'],
+        '/subscriptions' => ['controller' => 'FeedController', 'action' => 'subscriptions'],
+        '/history'       => ['controller' => 'FeedController', 'action' => 'history'],
+        '/liked'         => ['controller' => 'FeedController', 'action' => 'liked'],
+        '/shorts'        => ['controller' => 'FeedController', 'action' => 'shorts'],
     ],
     'POST' => [
         '/login' => ['controller' => 'AuthController', 'action' => 'login'],
@@ -30,5 +34,7 @@ return [
         '/forgot'        => ['controller' => 'AuthController', 'action' => 'forgot'],
         '/reset'         => ['controller' => 'AuthController', 'action' => 'reset'],
         '/account/delete'=> ['controller' => 'SettingsController', 'action' => 'deleteAccount'],
+        '/history' => ['controller' => 'FeedController', 'action' => 'history'],
+        '/tag' => ['controller' => 'VideoController', 'action' => 'tag'],
     ]
 ];

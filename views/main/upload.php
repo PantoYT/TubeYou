@@ -34,6 +34,11 @@
             <label for="thumbnail">Thumbnail:</label>
             <input type="file" id="thumbnail" name="thumbnail" accept="image/*" required>
         </div>
+
+        <div class="form-group">
+            <label for="tags">Tags (comma separated)</label>
+            <input type="text" id="tags" name="tags" placeholder="valorant, montage, gaming">
+        </div>
         
         <input type="hidden" id="duration" name="duration" value="0">
         <button type="submit" class="btn btn-primary">Upload Video</button>
