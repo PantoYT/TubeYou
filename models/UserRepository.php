@@ -78,4 +78,39 @@ class UserRepository
         $stmt->execute([$token]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function setResetToken(string $email, string $token): bool
+    {
+        $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
+        $stmt   = $this->db->prepare(
+            "UPDATE users SET resetToken = ?, resetExpiry = ? WHERE email = ?"
+        );
+        $stmt->execute([$token, $expiry, $email]);
+        return $stmt->rowCount() > 0;
+    }
+
+    public function findByResetToken(string $token): array|false
+    {
+        $stmt = $this->db->prepare(
+            "SELECT * FROM users WHERE resetToken = ? AND resetExpiry > NOW()"
+        );
+        $stmt->execute([$token]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function resetPassword(string $token, string $password): void
+    {
+        $hash = password_hash($password, PASSWORD_BCRYPT);
+        $stmt = $this->db->prepare(
+            "UPDATE users SET password = ?, resetToken = NULL, resetExpiry = NULL
+            WHERE resetToken = ?"
+        );
+        $stmt->execute([$hash, $token]);
+    }
+
+    public function delete(int $id): void
+    {
+        $stmt = $this->db->prepare("DELETE FROM users WHERE id = ?");
+        $stmt->execute([$id]);
+    }
 }

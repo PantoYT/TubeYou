@@ -80,4 +80,22 @@ class CommentController
         header('Location: /watch?id=' . $videoId . '#comments');
         exit;
     }
+
+    public function edit()
+    {
+        csrfVerify();
+        $this->requireAuth();
+
+        $userId    = $_SESSION['user']['id'];
+        $commentId = (int)($_POST['commentId'] ?? 0);
+        $videoId   = (int)($_POST['videoId'] ?? 0);
+        $content   = trim($_POST['content'] ?? '');
+
+        if ($content) {
+            $this->commentRepo->update($commentId, $userId, $content);
+        }
+
+        header('Location: /watch?id=' . $videoId . '#comment-' . $commentId);
+        exit;
+    }
 }

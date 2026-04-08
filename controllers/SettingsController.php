@@ -64,4 +64,30 @@ class SettingsController
         header('Location: /settings?saved=1');
         exit;
     }
+
+    public function deleteAccount()
+    {
+        csrfVerify();
+        if (!isset($_SESSION['user']['id'])) {
+            header('Location: /login');
+            exit;
+        }
+
+        $userId   = $_SESSION['user']['id'];
+        $password = $_POST['password'] ?? '';
+        $user     = $this->userRepo->findById($userId);
+
+        if (!password_verify($password, $user['password'])) {
+            render('settings/index', [
+                'user'   => $user,
+                'errors' => ['Incorrect password']
+            ]);
+            return;
+        }
+
+        $this->userRepo->delete($userId);
+        session_destroy();
+        header('Location: /register');
+        exit;
+    }
 }

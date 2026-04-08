@@ -144,4 +144,12 @@ class CommentRepository
         }
         return $comments;
     }
+
+    public function update(int $commentId, int $userId, string $content): void
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE comments SET content = ? WHERE id = ? AND userId = ?"
+        );
+        $stmt->execute([$content, $commentId, $userId]);
+    }
 }

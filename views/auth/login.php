@@ -24,6 +24,7 @@
         </div>
         
         <button type="submit" class="btn btn-primary">Login</button>
+        <p><a href="/forgot">Forgot password?</a></p>
         <p>Don't have an account? <a href="/register">Register here</a></p>
     </form>
 </div>

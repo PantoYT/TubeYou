@@ -51,4 +51,29 @@ class MailService
 
         $this->mail->send();
     }
+
+    public function sendPasswordReset(string $toEmail, string $toName, string $token): void
+    {
+        $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+        $link   = $scheme . '://' . $_SERVER['HTTP_HOST'] . '/reset?token=' . $token;
+
+        $this->mail->clearAddresses();
+        $this->mail->addAddress($toEmail, $toName);
+        $this->mail->isHTML(true);
+        $this->mail->Subject = 'Reset your TubeYou password';
+        $this->mail->Body    = "
+            <div style='font-family:sans-serif;max-width:480px;margin:0 auto;'>
+                <h2 style='color:#e05a5a;'>Password Reset</h2>
+                <p>Hi {$toName}, click below to reset your password. Link expires in 1 hour.</p>
+                <a href='{$link}'
+                style='display:inline-block;padding:10px 24px;background:#e05a5a;
+                        color:white;text-decoration:none;border-radius:6px;font-weight:600;'>
+                    Reset Password
+                </a>
+                <p style='color:#888;font-size:0.85rem;margin-top:1.5rem;'>{$link}</p>
+            </div>
+        ";
+        $this->mail->AltBody = "Reset your password: {$link}";
+        $this->mail->send();
+    }
 }

@@ -16,7 +16,7 @@
         <div class="video-header">
 
             <div class="channel-info">
-                <?= renderAvatar($video['creatorAvatar'] ?? null, '40px') ?>
+                <?= renderAvatar($video['creatorAvatar'] ?? null, '40px', '/channel?id=' . (int)$video['userId']) ?>
                 <div class="channel-meta">
                     <span class="channel-name">
                         <?= htmlspecialchars($video['creatorName'] ?? 'Unknown') ?>
@@ -69,7 +69,7 @@
                 <form method="POST" action="/comment/store" class="comment-form">
                     <?= csrfField() ?>
                     <input type="hidden" name="videoId" value="<?= (int)$video['id'] ?>">
-                    <?= renderAvatar($_SESSION['user']['avatar'] ?? null, '36px') ?>
+                    <?= renderAvatar($_SESSION['user']['avatar'] ?? null, '36px', '/channel?id=' . (int)$_SESSION['user']['id']) ?>
                     <div class="comment-input-wrap">
                         <textarea name="content" placeholder="Add a comment..." rows="1"
                                 class="comment-input"></textarea>
@@ -85,7 +85,7 @@
                     <div class="comment <?= $comment['pinned'] ? 'comment-pinned' : '' ?>"
                         id="comment-<?= $comment['id'] ?>">
 
-                        <?= renderAvatar($comment['avatar'] ?? null, '36px') ?>
+                        <?= renderAvatar($_SESSION['user']['avatar'] ?? null, '36px', '/channel?id=' . (int)$_SESSION['user']['id']) ?>
 
                         <div class="comment-body">
                             <div class="comment-header">
@@ -140,6 +140,22 @@
                                     </form>
                                 <?php endif; ?>
 
+                                <?php if (isset($_SESSION['user']) && (int)$_SESSION['user']['id'] === (int)$comment['userId']): ?>
+                                    <button class="comment-action-btn edit-toggle" data-comment="<?= $comment['id'] ?>">Edit</button>
+                                    <div class="edit-form" id="edit-<?= $comment['id'] ?>" style="display:none;">
+                                        <form method="POST" action="/comment/edit">
+                                            <?= csrfField() ?>
+                                            <input type="hidden" name="commentId" value="<?= $comment['id'] ?>">
+                                            <input type="hidden" name="videoId"   value="<?= (int)$video['id'] ?>">
+                                            <textarea name="content" class="comment-input"
+                                                    rows="2"><?= htmlspecialchars($comment['content']) ?></textarea>
+                                            <div class="comment-actions" style="margin-top:6px;">
+                                                <button type="submit" class="btn btn-primary">Save</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                <?php endif; ?>
+
                                 <?php if (isset($_SESSION['user']) && (int)$_SESSION['user']['id'] === (int)$video['userId']): ?>
                                     <form method="POST" action="/comment/pin" class="inline-form">
                                         <?= csrfField() ?>
@@ -160,7 +176,7 @@
                                     <?= csrfField() ?>
                                     <input type="hidden" name="videoId"  value="<?= (int)$video['id'] ?>">
                                     <input type="hidden" name="parentId" value="<?= $comment['id'] ?>">
-                                    <?= renderAvatar($_SESSION['user']['avatar'] ?? null, '28px') ?>
+                                    <?= renderAvatar($_SESSION['user']['avatar'] ?? null, '36px', '/channel?id=' . (int)$_SESSION['user']['id']) ?>
                                     <div class="comment-input-wrap">
                                         <textarea name="content" placeholder="Reply..." rows="1"
                                                 class="comment-input"></textarea>
@@ -175,7 +191,7 @@
                                 <div class="replies">
                                     <?php foreach ($comment['replies'] as $reply): ?>
                                         <div class="comment reply" id="comment-<?= $reply['id'] ?>">
-                                            <?= renderAvatar($reply['avatar'] ?? null, '28px') ?>
+                                            <?= renderAvatar($_SESSION['user']['avatar'] ?? null, '36px', '/channel?id=' . (int)$_SESSION['user']['id']) ?>
                                             <div class="comment-body">
                                                 <div class="comment-header">
                                                     <span class="comment-author"><?= htmlspecialchars($reply['displayName']) ?></span>
@@ -264,6 +280,13 @@
 
 <script>
 const csrf = document.querySelector('meta[name="csrf"]').content;
+
+document.querySelectorAll('.edit-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const form = document.getElementById('edit-' + btn.dataset.comment);
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    });
+});
 
 document.getElementById('like-btn')?.addEventListener('click', async () => {
     const videoId = document.getElementById('like-btn').dataset.video;

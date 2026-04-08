@@ -65,9 +65,34 @@
         </div>
     </nav>
 
-    <main class="container">
-        <?= $content ?? '' ?>
-    </main>
+    <div class="app-layout">
+        <aside class="sidebar">
+            <a href="/" class="sidebar-link <?= $uri === '/' ? 'active' : '' ?>">
+                <img src="/images/icons/home.svg" class="nav-icon"> Home
+            </a>
+            <a href="/shorts" class="sidebar-link">
+                <img src="/images/icons/bolt.svg" class="nav-icon"> Shorts
+            </a>
+            <?php if (isset($_SESSION['user'])): ?>
+                <hr class="sidebar-divider">
+                <a href="/subscriptions" class="sidebar-link">
+                    <img src="/images/icons/bell.svg" class="nav-icon"> Subscriptions
+                </a>
+                <a href="/history" class="sidebar-link">
+                    <img src="/images/icons/clock.svg" class="nav-icon"> History
+                </a>
+                <a href="/liked" class="sidebar-link">
+                    <img src="/images/icons/thumb-up.svg" class="nav-icon"> Liked
+                </a>
+                <a href="/channel?id=<?= $_SESSION['user']['id'] ?>" class="sidebar-link">
+                    <img src="/images/icons/user.svg" class="nav-icon"> Your channel
+                </a>
+            <?php endif; ?>
+        </aside>
+        <main class="container">
+            <?= $content ?? '' ?>
+        </main>
+    </div>
 
     <footer>
         <p>&copy; 2026 TubeYou. All rights reserved.</p>

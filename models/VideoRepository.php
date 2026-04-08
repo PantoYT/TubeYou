@@ -31,6 +31,19 @@ class VideoRepository
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function findByUserId(int $userId): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT v.*, u.displayName as creatorName, u.avatar as creatorAvatar
+            FROM videos v
+            LEFT JOIN users u ON v.userId = u.id
+            WHERE v.userId = ?
+            ORDER BY v.createdAt DESC"
+        );
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function save(int $userId, string $title, string $description, string $src, string $thumbnail, int $duration = 0): void
     {
         $stmt = $this->db->prepare(

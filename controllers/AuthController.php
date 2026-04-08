@@ -100,4 +100,60 @@ class AuthController
         header('Location: /login');
         exit;
     }
+
+    public function forgotForm()
+    {
+        render('auth/forgot');
+    }
+
+    public function forgot()
+    {
+        csrfVerify();
+        $email = trim($_POST['email'] ?? '');
+        $user  = $this->userRepo->findByEmail($email);
+
+        if ($user) {
+            $token = bin2hex(random_bytes(32));
+            $this->userRepo->setResetToken($email, $token);
+            $mailer = new MailService();
+            $mailer->sendPasswordReset($email, $user['displayName'], $token);
+        }
+
+        render('auth/forgot-sent');
+    }
+
+    public function resetForm()
+    {
+        $token = $_GET['token'] ?? '';
+        $user  = $this->userRepo->findByResetToken($token);
+
+        if (!$user) {
+            render('auth/reset', ['error' => 'Invalid or expired link', 'token' => '']);
+            return;
+        }
+
+        render('auth/reset', ['token' => $token]);
+    }
+
+    public function reset()
+    {
+        csrfVerify();
+        $token    = $_POST['token'] ?? '';
+        $password = $_POST['password'] ?? '';
+
+        if (strlen($password) < 6) {
+            render('auth/reset', ['token' => $token, 'error' => 'Password too short']);
+            return;
+        }
+
+        $user = $this->userRepo->findByResetToken($token);
+        if (!$user) {
+            render('auth/reset', ['token' => $token, 'error' => 'Invalid or expired link']);
+            return;
+        }
+
+        $this->userRepo->resetPassword($token, $password);
+        header('Location: /login');
+        exit;
+    }
 }

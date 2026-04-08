@@ -27,3 +27,4 @@ $videoRepo = new VideoRepository($db);
 $likeRepo  = new LikeRepository($db);
 $subRepo   = new SubRepository($db);
 $commentRepo = new CommentRepository($db);
+$channelController = new ChannelController($userRepo, $videoRepo, $subRepo);

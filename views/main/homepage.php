@@ -15,7 +15,7 @@
                     <div class="video-info">
                         <h3><a href="/watch?id=<?= $video['id'] ?>"><?= htmlspecialchars($video['title']) ?></a></h3>
                         <div class="video-card-meta">
-                            <?= renderAvatar($video['creatorAvatar'] ?? null, '24px') ?>
+                            <?= renderAvatar($video['creatorAvatar'] ?? null, '24px', '/channel?id=' . (int)$video['userId']) ?>
                             <p class="video-meta">
                                 <?= htmlspecialchars($video['creatorName'] ?? 'Unknown') ?> •
                                 <?= formatNumber($video['views'] ?? 0) ?> views •

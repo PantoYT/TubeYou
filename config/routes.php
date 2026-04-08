@@ -11,6 +11,9 @@ return [
         '/logout' => ['controller' => 'AuthController', 'action' => 'logout'],
         '/settings' => ['controller' => 'SettingsController', 'action' => 'index'],
         '/verify' => ['controller' => 'AuthController', 'action' => 'verify'],
+        '/channel' => ['controller' => 'ChannelController', 'action' => 'index'],
+        '/forgot'        => ['controller' => 'AuthController', 'action' => 'forgotForm'],
+        '/reset'         => ['controller' => 'AuthController', 'action' => 'resetForm'],
     ],
     'POST' => [
         '/login' => ['controller' => 'AuthController', 'action' => 'login'],
@@ -23,5 +26,9 @@ return [
         '/comment/delete' => ['controller' => 'CommentController', 'action' => 'delete'],
         '/comment/pin'    => ['controller' => 'CommentController', 'action' => 'pin'],
         '/comment/like'   => ['controller' => 'CommentController', 'action' => 'like'],
+        '/comment/edit' => ['controller' => 'CommentController', 'action' => 'edit'],
+        '/forgot'        => ['controller' => 'AuthController', 'action' => 'forgot'],
+        '/reset'         => ['controller' => 'AuthController', 'action' => 'reset'],
+        '/account/delete'=> ['controller' => 'SettingsController', 'action' => 'deleteAccount'],
     ]
 ];

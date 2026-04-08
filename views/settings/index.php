@@ -39,6 +39,20 @@
             ><?= htmlspecialchars($user['bio'] ?? '') ?></textarea>
         </div>
 
+        <hr style="margin:2rem 0;border-color:var(--border);">
+        <h3 style="color:#c0392b;margin-bottom:1rem;">Delete account</h3>
+        <form method="POST" action="/account/delete" class="auth-form">
+            <?= csrfField() ?>
+            <div class="form-group">
+                <label>Confirm password</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-danger"
+                    onclick="return confirm('Are you sure? This cannot be undone.')">
+                Delete my account
+            </button>
+        </form>
+
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
 </div>

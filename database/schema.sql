@@ -14,7 +14,9 @@ create table if not exists users
     bio text,
     createdAt timestamp default current_timestamp,
     emailVerified TINYINT(1) default 0,
-    verifyToken varchar(64) default null
+    verifyToken varchar(64) default null,
+    resetToken    VARCHAR(64) DEFAULT NULL,
+    resetExpiry   DATETIME    DEFAULT NULL
 );
 
 create table if not exists videos
@@ -76,4 +78,17 @@ create table if not exists commentLikes
     primary key (userId, commentId),
     foreign key (userId)    references users(id)    on delete cascade,
     foreign key (commentId) references comments(id) on delete cascade
+);
+
+CREATE TABLE tags (
+    id   INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE videoTags (
+    videoId INT NOT NULL,
+    tagId   INT NOT NULL,
+    PRIMARY KEY (videoId, tagId),
+    FOREIGN KEY (videoId) REFERENCES videos(id) ON DELETE CASCADE,
+    FOREIGN KEY (tagId)   REFERENCES tags(id)   ON DELETE CASCADE
 );

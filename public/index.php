@@ -19,17 +19,12 @@ if (isset($routes[$method][$uri])) {
     
     $controller = match ($route['controller']) {
         'AuthController' => new AuthController($userRepo),
-        'VideoController' => new VideoController
-            (
-            $videoRepo,
-            $likeRepo,
-            $subRepo,
-            $commentRepo
-            ),
+        'VideoController' => new VideoController($videoRepo,$likeRepo,$subRepo,$commentRepo),
         'LikeController' => new LikeController($likeRepo),
         'SubController' => new SubController($subRepo),
         'SettingsController' => new SettingsController($userRepo),
         'CommentController' => new CommentController($commentRepo),
+        'ChannelController' => new ChannelController($userRepo, $videoRepo, $subRepo),
         default => null
     };
 

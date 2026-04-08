@@ -1,7 +1,0 @@
-- Create README.md
-- Add avatar view
-- hosting?
-- shorts?
-- tags
-- more menus and qol
-- studio/editor
