@@ -164,20 +164,20 @@ YOUR_LOCAL_IP tubeyou.local
 ## 🗺 Roadmap
 
 ### 🔥 Core Improvements
-- [ ] Video processing (thumbnails, compression)
-- [ ] Better recommendation algorithm
-- [ ] Watch history tracking
+- [x] Video processing (thumbnails, compression)
+- [x] Better recommendation algorithm
+- [x] Watch history tracking
 - [ ] Notifications system
 
 ### 👤 User Features
 - [ ] Playlists
-- [ ] Watch later
-- [ ] Channel customization
-- [ ] User settings panel
+- [x] Watch later
+- [x] Channel customization
+- [x] User settings panel
 
 ### 💬 Social
 - [ ] Comment mentions (@user)
-- [ ] Comment sorting (top/new)
+- [x] Comment sorting (top/new)
 - [ ] Community posts
 
 ### ⚡ Performance
@@ -186,12 +186,12 @@ YOUR_LOCAL_IP tubeyou.local
 - [ ] Query optimization
 
 ### 🔐 Security
-- [ ] Rate limiting
-- [ ] CSRF improvements
-- [ ] Input sanitization audit
+- [x] Rate limiting
+- [x] CSRF improvements
+- [x] Input sanitization audit
 
 ### 🌍 Deployment
-- [ ] Production deployment guide
+- [x] Production deployment guide
 - [ ] Docker setup
 - [ ] CI/CD pipeline
 
