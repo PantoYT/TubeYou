@@ -193,8 +193,9 @@ class VideoController
 
         $videoSrc     = '/uploads/videos/'     . $userId . '/' . $videoName;
         $thumbnailSrc = '/uploads/thumbnails/' . $userId . '/' . $thumbnailName;
+        $isShort = isset($_POST['isShort']) ? 1 : 0;
 
-        $this->videoRepo->save($userId, $title, $description, $videoSrc, $thumbnailSrc);
+        $this->videoRepo->save($userId, $title, $description, $videoSrc, $thumbnailSrc, 0, $isShort);
         $videoId = (int)$this->videoRepo->lastInsertId();
         $tags    = trim($_POST['tags'] ?? '');
         if ($tags) {

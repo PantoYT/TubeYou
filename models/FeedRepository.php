@@ -59,7 +59,7 @@ class FeedRepository
             "SELECT v.*, u.displayName as creatorName, u.avatar as creatorAvatar
              FROM videos v
              JOIN users u ON v.userId = u.id
-             WHERE v.duration <= 60
+             WHERE v.isShort = 1
              ORDER BY v.createdAt DESC
              LIMIT ? OFFSET ?"
         );
@@ -72,7 +72,7 @@ class FeedRepository
     public function countShorts(): int
     {
         return (int)$this->db->query(
-            "SELECT COUNT(*) FROM videos WHERE duration <= 60"
+            "SELECT COUNT(*) FROM videos WHERE isShort = 1"
         )->fetchColumn();
     }
 

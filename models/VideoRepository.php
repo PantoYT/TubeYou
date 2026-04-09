@@ -44,12 +44,12 @@ class VideoRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function save(int $userId, string $title, string $description, string $src, string $thumbnail, int $duration = 0): void
+    public function save(int $userId, string $title, string $description, string $src, string $thumbnail, int $duration = 0, int $isShort = 0): void
     {
         $stmt = $this->db->prepare(
-            "INSERT INTO videos (userId, title, description, src, thumbnail, duration) VALUES (?, ?, ?, ?, ?, ?)"
+            "INSERT INTO videos (userId, title, description, src, thumbnail, duration, isShort) VALUES (?, ?, ?, ?, ?, ?, ?)"
         );
-        $stmt->execute([$userId, $title, $description, $src, $thumbnail, $duration]);
+        $stmt->execute([$userId, $title, $description, $src, $thumbnail, $duration, $isShort]);
     }
 
     public function incrementViews(int $id): void

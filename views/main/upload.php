@@ -35,6 +35,11 @@
             <input type="file" id="thumbnail" name="thumbnail" accept="image/*" required>
         </div>
 
+        <div class="form-group" style="flex-direction:row;align-items:center;gap:10px;">
+            <input type="checkbox" id="isShort" name="isShort" value="1" style="width:auto;height:auto;">
+            <label for="isShort" style="margin:0;">Upload as Short (vertical video)</label>
+        </div>
+
         <div class="form-group">
             <label for="tags">Tags (comma separated)</label>
             <input type="text" id="tags" name="tags" placeholder="valorant, montage, gaming">

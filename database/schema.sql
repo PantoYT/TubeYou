@@ -32,7 +32,8 @@ create table if not exists videos
     createdAt timestamp default current_timestamp,
     views bigint default 0,
     index idx_videos_userId (userId),
-    fulltext idx_fulltext_title_desc (title, description)
+    fulltext idx_fulltext_title_desc (title, description),
+    isShort tinyint(1) default 0
 );
 
 create table if not exists likes
