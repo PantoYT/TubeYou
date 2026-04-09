@@ -30,7 +30,23 @@
                     Upload
                 </a>
 
-                <!-- powiadomienia później tu -->
+                <?php if (isset($_SESSION['user'])): ?>
+                    <?php
+                        $unread = isset($notifRepo) ? $notifRepo->countUnread($_SESSION['user']['id']) : 0;
+                    ?>
+                    <a href="/notifications" class="btn" style="position:relative;padding:0 0.6rem;">
+                        <img src="/images/icons/<?= $unread > 0 ? 'bell-ringing' : 'bell' ?>.svg" class="nav-icon" style="margin:0;">
+                        <?php if ($unread > 0): ?>
+                            <span style="
+                                position:absolute;top:-4px;right:-4px;
+                                background:var(--primary);color:white;
+                                border-radius:50%;width:16px;height:16px;
+                                font-size:0.65rem;font-weight:700;
+                                display:flex;align-items:center;justify-content:center;
+                            "><?= min($unread, 99) ?></span>
+                        <?php endif; ?>
+                    </a>
+                <?php endif; ?>
 
                 <div class="avatar-menu">
                     <button class="avatar-trigger" id="avatar-trigger">
@@ -86,6 +102,12 @@
                 </a>
                 <a href="/channel?id=<?= $_SESSION['user']['id'] ?>" class="sidebar-link">
                     <img src="/images/icons/user.svg" class="nav-icon"> Your channel
+                </a>
+                <a href="/watch-later" class="sidebar-link">
+                    <img src="/images/icons/bookmark.svg" class="nav-icon"> Watch Later
+                </a>
+                <a href="/notifications" class="sidebar-link">
+                    <img src="/images/icons/bell.svg" class="nav-icon"> Notifications
                 </a>
             <?php endif; ?>
         </aside>

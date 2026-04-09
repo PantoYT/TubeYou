@@ -90,4 +90,47 @@ class FeedRepository
         $stmt = $this->db->prepare("DELETE FROM history WHERE userId = ?");
         $stmt->execute([$userId]);
     }
+
+    public function toggleWatchLater(int $userId, int $videoId): bool
+    {
+        $stmt = $this->db->prepare(
+            "SELECT 1 FROM watchLater WHERE userId = ? AND videoId = ?"
+        );
+        $stmt->execute([$userId, $videoId]);
+
+        if ($stmt->fetch()) {
+            $this->db->prepare(
+                "DELETE FROM watchLater WHERE userId = ? AND videoId = ?"
+            )->execute([$userId, $videoId]);
+            return false;
+        }
+
+        $this->db->prepare(
+            "INSERT INTO watchLater (userId, videoId) VALUES (?, ?)"
+        )->execute([$userId, $videoId]);
+        return true;
+    }
+
+    public function isInWatchLater(int $userId, int $videoId): bool
+    {
+        $stmt = $this->db->prepare(
+            "SELECT 1 FROM watchLater WHERE userId = ? AND videoId = ?"
+        );
+        $stmt->execute([$userId, $videoId]);
+        return (bool)$stmt->fetch();
+    }
+
+    public function getWatchLater(int $userId): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT v.*, u.displayName as creatorName, u.avatar as creatorAvatar
+            FROM videos v
+            JOIN users u ON v.userId = u.id
+            JOIN watchLater wl ON wl.videoId = v.id
+            WHERE wl.userId = ?
+            ORDER BY wl.addedAt DESC"
+        );
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

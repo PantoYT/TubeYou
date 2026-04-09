@@ -18,6 +18,9 @@ return [
         '/history'       => ['controller' => 'FeedController', 'action' => 'history'],
         '/liked'         => ['controller' => 'FeedController', 'action' => 'liked'],
         '/shorts'        => ['controller' => 'FeedController', 'action' => 'shorts'],
+        '/tag' => ['controller' => 'VideoController', 'action' => 'tag'],
+        '/watch-later' => ['controller' => 'FeedController', 'action' => 'watchLater'],
+        '/notifications' => ['controller' => 'NotificationController', 'action' => 'index'],
     ],
     'POST' => [
         '/login' => ['controller' => 'AuthController', 'action' => 'login'],
@@ -36,5 +39,7 @@ return [
         '/account/delete'=> ['controller' => 'SettingsController', 'action' => 'deleteAccount'],
         '/history' => ['controller' => 'FeedController', 'action' => 'history'],
         '/tag' => ['controller' => 'VideoController', 'action' => 'tag'],
+        '/watch-later/toggle' => ['controller' => 'FeedController', 'action' => 'toggleWatchLater'],
+        '/notifications/read' => ['controller' => 'NotificationController', 'action' => 'markRead'],
     ]
 ];

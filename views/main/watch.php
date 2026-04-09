@@ -44,6 +44,13 @@
                     <img src="/images/icons/thumb-down<?= $isDisliked ? '-filled' : '' ?>.svg">
                 </button>
                 <span class="action-count"><?= formatNumber($dislikeCount) ?></span>
+                <?php if (isset($_SESSION['user'])): ?>
+                    <div class="action-divider"></div>
+                    <button id="wl-btn" class="action-btn" data-video="<?= (int)$video['id'] ?>"
+                            title="<?= $isWatchLater ? 'Remove from Watch Later' : 'Save to Watch Later' ?>">
+                        <img src="/images/icons/<?= $isWatchLater ? 'bookmark-filled' : 'bookmark' ?>.svg">
+                    </button>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -63,6 +70,20 @@
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+            <h3 class="comments-title" style="margin:0;"><?= formatNumber($commentCount) ?> Comments</h3>
+            <div style="display:flex;gap:6px;">
+                <a href="?id=<?= (int)$video['id'] ?>&sort=new<?= $commentPage > 1 ? '&cpage='.$commentPage : '' ?>"
+                class="btn <?= $sort === 'new' ? 'btn-primary' : '' ?>" style="height:30px;font-size:0.8rem;">
+                    New
+                </a>
+                <a href="?id=<?= (int)$video['id'] ?>&sort=top<?= $commentPage > 1 ? '&cpage='.$commentPage : '' ?>"
+                class="btn <?= $sort === 'top' ? 'btn-primary' : '' ?>" style="height:30px;font-size:0.8rem;">
+                    Top
+                </a>
+            </div>
+        </div>
 
         <div class="comments-section" id="comments">
 
@@ -327,6 +348,16 @@ document.getElementById('sub-btn')?.addEventListener('click', async () => {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: 'subscribedToId=' + subscribedToId + '&csrf_token=' + csrf
+    });
+    if (res.ok) location.reload();
+});
+
+document.getElementById('wl-btn')?.addEventListener('click', async () => {
+    const videoId = document.getElementById('wl-btn').dataset.video;
+    const res = await fetch('/watch-later/toggle', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'videoId=' + videoId + '&csrf_token=' + csrf
     });
     if (res.ok) location.reload();
 });

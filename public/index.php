@@ -22,11 +22,12 @@ if (isset($routes[$method][$uri])) {
         'AuthController' => new AuthController($userRepo),
         'VideoController' => new VideoController($videoRepo,$likeRepo,$subRepo,$commentRepo,$feedRepo, $tagRepo),
         'LikeController' => new LikeController($likeRepo),
-        'SubController' => new SubController($subRepo),
+        'SubController' => new SubController($subRepo, $notifRepo),
         'SettingsController' => new SettingsController($userRepo),
-        'CommentController' => new CommentController($commentRepo),
+        'CommentController' => new CommentController($commentRepo, $notifRepo),
         'ChannelController' => new ChannelController($userRepo, $videoRepo, $subRepo),
         'FeedController' => new FeedController($feedRepo),
+        'NotificationController' => new NotificationController($notifRepo),
         default => null
     };
 

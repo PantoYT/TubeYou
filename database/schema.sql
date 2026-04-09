@@ -102,3 +102,26 @@ CREATE TABLE history (
     FOREIGN KEY (userId)  REFERENCES users(id)  ON DELETE CASCADE,
     FOREIGN KEY (videoId) REFERENCES videos(id) ON DELETE CASCADE
 );
+
+create table if not exists watchLater (
+    userId  int not null,
+    videoId int not null,
+    addedAt timestamp default current_timestamp,
+    primary key (userId, videoId),
+    foreign key (userId)  references users(id)  on delete cascade,
+    foreign key (videoId) references videos(id) on delete cascade
+);
+
+create table if not exists notifications (
+    id        int primary key auto_increment,
+    userId    int not null,
+    fromUserId int not null,
+    type      enum('comment','reply','like','sub') not null,
+    videoId   int default null,
+    commentId int default null,
+    isRead    tinyint(1) default 0,
+    createdAt timestamp default current_timestamp,
+    foreign key (userId)     references users(id) on delete cascade,
+    foreign key (fromUserId) references users(id) on delete cascade,
+    foreign key (videoId)    references videos(id) on delete cascade
+);

@@ -4,7 +4,8 @@
         <div class="video-card">
             <a href="/watch?id=<?= $video['id'] ?>" class="video-thumbnail">
                 <img src="<?= htmlspecialchars($video['thumbnail']) ?>"
-                     alt="<?= htmlspecialchars($video['title']) ?>">
+                     alt="<?= htmlspecialchars($video['title']) ?>"
+                     loading="lazy">
                 <span class="video-duration"><?= gmdate('i:s', $video['duration'] ?? 0) ?></span>
             </a>
             <div class="video-info">

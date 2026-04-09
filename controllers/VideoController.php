@@ -61,6 +61,7 @@ class VideoController
         $userId       = $_SESSION['user']['id'] ?? null;
         $isLiked      = false;
         $isDisliked   = false;
+        $isWatchLater = false;
         $likeCount    = $this->likeRepo->countLikes((int)$id);
         $dislikeCount = $this->likeRepo->countDislikes((int)$id);
         $isSubbed     = false;
@@ -71,11 +72,15 @@ class VideoController
             $isDisliked = $this->likeRepo->isDisliked($userId, (int)$id);
             $isSubbed   = $this->subRepo->isSubbed($userId, $video['userId']);
             $this->feedRepo->recordHistory($userId, (int)$id);
+            $isWatchLater = $this->feedRepo->isInWatchLater($userId, (int)$id);
         }
 
         $commentPage  = max(1, (int)($_GET['cpage'] ?? 1));
         $commentPerPage = 10;
-        $comments     = $this->commentRepo->getForVideoPaginated((int)$id, $commentPage, $commentPerPage);
+        $sort         = in_array($_GET['sort'] ?? 'new', ['new', 'top']) ? ($_GET['sort'] ?? 'new') : 'new';
+
+        $comments     = $this->commentRepo->getForVideoPaginated((int)$id, $commentPage, $commentPerPage, $sort);
+
         $commentCount = $this->commentRepo->count((int)$id);
         $commentPages = (int)ceil($commentCount / $commentPerPage);
         $suggested    = $this->videoRepo->findSuggested((int)$id, $userId ?? 0);
@@ -94,6 +99,8 @@ class VideoController
             'commentPages'  => $commentPages,
             'suggested'     => $suggested,
             'tags'          => $tags,
+            'isWatchLater' => $isWatchLater,
+            'sort' => $sort,
         ]);
     }
 
@@ -132,8 +139,8 @@ class VideoController
         }
 
         $userId      = $_SESSION['user']['id'];
-        $title       = trim($_POST['title'] ?? '');
-        $description = trim($_POST['description'] ?? '');
+        $title       = sanitizeTitle($_POST['title'] ?? '');
+        $description = sanitizeText($_POST['description'] ?? '', 5000);
 
         $errors = [];
 

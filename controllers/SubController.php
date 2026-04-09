@@ -3,10 +3,12 @@
 class SubController
 {
     private SubRepository $subRepo;
+    private NotificationRepository $notifRepo;
 
-    public function __construct(SubRepository $subRepo)
+    public function __construct(SubRepository $subRepo, NotificationRepository $notifRepo)
     {
         $this->subRepo = $subRepo;
+        $this->notifRepo = $notifRepo;
     }
 
     public function toggle()
@@ -21,6 +23,10 @@ class SubController
         $subscribedToId = (int)($_POST['subscribedToId'] ?? 0);
 
         $subbed = $this->subRepo->toggleSub($subscriberId, $subscribedToId);
+
+        if ($subbed) {
+            $this->notifRepo->create($subscribedToId, $subscriberId, 'sub');
+        }
 
         echo json_encode(['subbed' => $subbed]);
     }

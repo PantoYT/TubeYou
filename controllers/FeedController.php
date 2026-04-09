@@ -53,4 +53,21 @@ class FeedController
         $pages  = (int)ceil($this->feedRepo->countShorts() / 12);
         render('feed/shorts', ['videos' => $videos, 'page' => $page, 'pages' => $pages]);
     }
+
+    public function watchLater()
+    {
+        $this->requireAuth();
+        $videos = $this->feedRepo->getWatchLater($_SESSION['user']['id']);
+        render('feed/watch_later', ['videos' => $videos]);
+    }
+
+    public function toggleWatchLater()
+    {
+        csrfVerify();
+        $this->requireAuth();
+        $userId  = $_SESSION['user']['id'];
+        $videoId = (int)($_POST['videoId'] ?? 0);
+        $added   = $this->feedRepo->toggleWatchLater($userId, $videoId);
+        echo json_encode(['added' => $added]);
+    }
 }

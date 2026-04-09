@@ -17,8 +17,13 @@ class AuthController
     public function login()
     {
         csrfVerify();
+        $limiter = new RateLimiter();
+        if (!$limiter->check('login_' . $limiter->ip(), 10, 60)) {
+            render('auth/login', ['error' => 'Too many attempts. Wait a minute.']);
+            return;
+        }
 
-        $email    = $_POST['email'] ?? '';
+        $email    = sanitizeText($_POST['email'] ?? '', 255);
         $password = $_POST['password'] ?? '';
 
         $user = $this->userRepo->findByEmail($email);
@@ -46,9 +51,15 @@ class AuthController
     public function register()
     {
         csrfVerify();
+        $limiter = new RateLimiter();
+        $limiter = new RateLimiter();
+        if (!$limiter->check('register_' . $limiter->ip(), 5, 3600)) {
+            render('auth/register', ['errors' => ['Too many registrations from this IP.']]);
+            return;
+        }
 
-        $email    = trim($_POST['email'] ?? '');
-        $name     = trim($_POST['name'] ?? '');
+        $email    = sanitizeText($_POST['email'] ?? '', 255);
+        $name     = sanitizeText($_POST['name'] ?? '', 255);
         $password = $_POST['password'] ?? '';
 
         $errors = [];
@@ -109,7 +120,7 @@ class AuthController
     public function forgot()
     {
         csrfVerify();
-        $email = trim($_POST['email'] ?? '');
+        $email    = sanitizeText($_POST['email'] ?? '', 255);
         $user  = $this->userRepo->findByEmail($email);
 
         if ($user) {

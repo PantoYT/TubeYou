@@ -2,7 +2,7 @@
 function renderAvatar(?string $avatar, string $size = '36px', ?string $href = null): string
 {
     $img = $avatar
-        ? '<img src="' . htmlspecialchars($avatar) . '" alt="avatar" 
+        ? '<img src="' . htmlspecialchars($avatar) . '" alt="avatar"  loading="lazy" 
                style="width:' . $size . ';height:' . $size . ';border-radius:50%;object-fit:cover;">'
         : '<span class="avatar-placeholder" style="width:' . $size . ';height:' . $size . ';
                border-radius:50%;background:var(--avatar-bg);display:inline-flex;

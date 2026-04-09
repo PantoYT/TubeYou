@@ -6,18 +6,11 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 require_once __DIR__ . '/database/connection.php';
-
-require_once __DIR__ . '/helpers/csrf.php';
-
-require_once __DIR__ . '/views/partials/avatar.php';
-require_once __DIR__ . '/views/partials/pagination.php';
-
-require_once __DIR__ . '/services/MailService.php';
-
 foreach (glob(__DIR__ . '/models/*.php') as $file) require_once $file;
 foreach (glob(__DIR__ . '/controllers/*.php') as $file) require_once $file;
 foreach (glob(__DIR__ . '/services/*.php') as $file) require_once $file;
 foreach (glob(__DIR__ . '/helpers/*.php') as $file) require_once $file;
+foreach (glob(__DIR__ . '/views/partials/*.php') as $file) require_once $file;
 
 session_start();
 
@@ -30,3 +23,4 @@ $commentRepo = new CommentRepository($db);
 $channelController = new ChannelController($userRepo, $videoRepo, $subRepo);
 $feedRepo = new FeedRepository($db);
 $tagRepo = new TagRepository($db);
+$notifRepo = new NotificationRepository($db);
