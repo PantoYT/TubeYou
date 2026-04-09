@@ -167,7 +167,7 @@ YOUR_LOCAL_IP tubeyou.local
 - [x] Video processing (thumbnails, compression)
 - [x] Better recommendation algorithm
 - [x] Watch history tracking
-- [ ] Notifications system
+- [x] Notifications system
 
 ### 👤 User Features
 - [ ] Playlists
