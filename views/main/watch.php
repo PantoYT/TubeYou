@@ -71,23 +71,23 @@
             </div>
         <?php endif; ?>
 
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
-            <h3 class="comments-title" style="margin:0;"><?= formatNumber($commentCount) ?> Comments</h3>
-            <div style="display:flex;gap:6px;">
-                <a href="?id=<?= (int)$video['id'] ?>&sort=new<?= $commentPage > 1 ? '&cpage='.$commentPage : '' ?>"
-                class="btn <?= $sort === 'new' ? 'btn-primary' : '' ?>" style="height:30px;font-size:0.8rem;">
-                    New
-                </a>
-                <a href="?id=<?= (int)$video['id'] ?>&sort=top<?= $commentPage > 1 ? '&cpage='.$commentPage : '' ?>"
-                class="btn <?= $sort === 'top' ? 'btn-primary' : '' ?>" style="height:30px;font-size:0.8rem;">
-                    Top
-                </a>
-            </div>
-        </div>
+
 
         <div class="comments-section" id="comments">
 
-            <h3 class="comments-title"><?= formatNumber($commentCount) ?> Comments</h3>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                <h3 class="comments-title" style="margin:0;"><?= formatNumber($commentCount) ?> Comments</h3>
+                <div style="display:flex;gap:6px;">
+                    <a href="?id=<?= (int)$video['id'] ?>&sort=new<?= $commentPage > 1 ? '&cpage='.$commentPage : '' ?>"
+                    class="btn <?= $sort === 'new' ? 'btn-primary' : '' ?>" style="height:30px;font-size:0.8rem;">
+                        New
+                    </a>
+                    <a href="?id=<?= (int)$video['id'] ?>&sort=top<?= $commentPage > 1 ? '&cpage='.$commentPage : '' ?>"
+                    class="btn <?= $sort === 'top' ? 'btn-primary' : '' ?>" style="height:30px;font-size:0.8rem;">
+                        Top
+                    </a>
+                </div>
+            </div>
 
             <?php if (isset($_SESSION['user'])): ?>
                 <form method="POST" action="/comment/store" class="comment-form">
