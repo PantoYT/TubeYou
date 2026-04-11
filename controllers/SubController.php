@@ -28,6 +28,9 @@ class SubController
             $this->notifRepo->create($subscribedToId, $subscriberId, 'sub');
         }
 
-        echo json_encode(['subbed' => $subbed]);
+        echo json_encode([
+            'subbed'   => $subbed,
+            'subCount' => $this->subRepo->countSubs($subscribedToId),
+        ]);
     }
 }

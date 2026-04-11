@@ -36,12 +36,12 @@
                 <button id="like-btn" class="action-btn" data-video="<?= (int)$video['id'] ?>">
                     <img src="/images/icons/thumb-up<?= $isLiked ? '-filled' : '' ?>.svg">
                 </button>
-                <span class="action-count"><?= formatNumber($likeCount) ?></span>
+                <span class="action-count" id="like-count"><?= formatNumber($likeCount) ?></span>
                 <div class="action-divider"></div>
                 <button id="dislike-btn" class="action-btn" data-video="<?= (int)$video['id'] ?>">
                     <img src="/images/icons/thumb-down<?= $isDisliked ? '-filled' : '' ?>.svg">
                 </button>
-                <span class="action-count"><?= formatNumber($dislikeCount) ?></span>
+                <span class="action-count" id="dislike-count"><?= formatNumber($dislikeCount) ?></span>
                 <?php if (isset($_SESSION['user'])): ?>
                     <div class="action-divider"></div>
                     <button id="wl-btn" class="action-btn" data-video="<?= (int)$video['id'] ?>"
@@ -310,6 +310,153 @@ function changeQuality(q) {
     });
 }
 
+// ── Like / Dislike ──
+const likeBtn    = document.getElementById('like-btn');
+const dislikeBtn = document.getElementById('dislike-btn');
+const likeCount    = document.getElementById('like-count');
+const dislikeCount = document.getElementById('dislike-count');
+
+async function toggleLike(type) {
+    const btn = type === 1 ? likeBtn : dislikeBtn;
+    const videoId = btn.dataset.video;
+
+    const likeImg    = likeBtn.querySelector('img');
+    const dislikeImg = dislikeBtn.querySelector('img');
+
+    let likes    = parseInt(likeCount.textContent.replace(/\D/g,'')) || 0;
+    let dislikes = parseInt(dislikeCount.textContent.replace(/\D/g,'')) || 0;
+
+    const liked = likeImg.src.includes('-filled');
+    const disliked = dislikeImg.src.includes('-filled');
+
+    if (type === 1) {
+        likeImg.src = liked
+            ? '/images/icons/thumb-up.svg'
+            : '/images/icons/thumb-up-filled.svg';
+
+        if (disliked) {
+            dislikeImg.src = '/images/icons/thumb-down.svg';
+            dislikes--;
+        }
+
+        likes += liked ? -1 : 1;
+    } else {
+        dislikeImg.src = disliked
+            ? '/images/icons/thumb-down.svg'
+            : '/images/icons/thumb-down-filled.svg';
+
+        if (liked) {
+            likeImg.src = '/images/icons/thumb-up.svg';
+            likes--;
+        }
+
+        dislikes += disliked ? -1 : 1;
+    }
+
+    likeCount.textContent = likes;
+    dislikeCount.textContent = dislikes;
+
+    const res = await fetch('/like/toggle', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `videoId=${videoId}&type=${type}&csrf_token=${csrf}`
+    });
+
+    if (!res.ok) {
+        location.reload();
+        return;
+    }
+
+    const data = await res.json();
+
+    likeCount.textContent    = data.likeCount;
+    dislikeCount.textContent = data.dislikeCount;
+}
+
+likeBtn?.addEventListener('click',    () => toggleLike(1));
+dislikeBtn?.addEventListener('click', () => toggleLike(-1));
+
+// ── Sub ──
+const subBtn = document.getElementById('sub-btn');
+
+subBtn?.addEventListener('click', async function() {
+    const subsEl = document.querySelector('.channel-subs');
+
+    let subs = parseInt(subsEl.textContent.replace(/\D/g,'')) || 0;
+    const wasSubbed = this.classList.contains('subbed');
+
+    this.classList.toggle('subbed');
+    this.textContent = wasSubbed ? 'Subscribe' : 'Subscribed';
+
+    subs += wasSubbed ? -1 : 1;
+    subsEl.textContent = subs + ' subscribers';
+
+    const res = await fetch('/sub/toggle', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `subscribedToId=${this.dataset.subscribedTo}&csrf_token=${csrf}`
+    });
+
+    if (!res.ok) {
+        location.reload();
+        return;
+    }
+
+    const data = await res.json();
+
+    if (data.subCount !== undefined) {
+        subsEl.textContent = data.subCount + ' subscribers';
+    }
+});
+
+// ── Watch Later ──
+document.getElementById('wl-btn')?.addEventListener('click', async function() {
+    const btn = this;
+    const img = btn.querySelector('img');
+
+    const wasAdded = img.src.includes('bookmark-filled');
+
+    // ── optimistic UI ──
+    img.src = wasAdded
+        ? '/images/icons/bookmark.svg'
+        : '/images/icons/bookmark-filled.svg';
+
+    btn.title = wasAdded
+        ? 'Save to Watch Later'
+        : 'Remove from Watch Later';
+
+    const res = await fetch('/watch-later/toggle', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `videoId=${btn.dataset.video}&csrf_token=${csrf}`
+    });
+
+    if (!res.ok) {
+        // rollback if failed
+        img.src = wasAdded
+            ? '/images/icons/bookmark-filled.svg'
+            : '/images/icons/bookmark.svg';
+
+        btn.title = wasAdded
+            ? 'Remove from Watch Later'
+            : 'Save to Watch Later';
+
+        return;
+    }
+
+    const data = await res.json();
+
+    // backend truth (just in case)
+    img.src = data.added
+        ? '/images/icons/bookmark-filled.svg'
+        : '/images/icons/bookmark.svg';
+
+    btn.title = data.added
+        ? 'Remove from Watch Later'
+        : 'Save to Watch Later';
+});
+
+// ── Reply toggle ──
 document.querySelectorAll('.reply-toggle').forEach(btn => {
     btn.addEventListener('click', () => {
         const form = document.getElementById('reply-' + btn.dataset.parent);
@@ -318,6 +465,7 @@ document.querySelectorAll('.reply-toggle').forEach(btn => {
     });
 });
 
+// ── Edit toggle ──
 document.querySelectorAll('.edit-toggle').forEach(btn => {
     btn.addEventListener('click', () => {
         const form = document.getElementById('edit-' + btn.dataset.comment);
@@ -326,43 +474,108 @@ document.querySelectorAll('.edit-toggle').forEach(btn => {
     });
 });
 
-document.getElementById('like-btn')?.addEventListener('click', async () => {
-    const videoId = document.getElementById('like-btn').dataset.video;
-    const res = await fetch('/like/toggle', {
+// ── Comment submit (AJAX) ──
+document.querySelector('.comment-form:not(.reply-form)')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form    = this;
+    const data    = new FormData(form);
+    const content = data.get('content')?.trim();
+    if (!content) return;
+
+    const res = await fetch('/comment/store', {
         method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'videoId=' + videoId + '&type=1&csrf_token=' + csrf
+        body: new URLSearchParams({
+            videoId:    data.get('videoId'),
+            content:    content,
+            csrf_token: csrf
+        })
     });
-    if (res.ok) location.reload();
+
+    if (!res.ok) return;
+
+    const textarea = form.querySelector('textarea');
+    textarea.value = '';
+
+    const avatar  = <?= json_encode(renderAvatar($_SESSION['user']['avatar'] ?? null, '36px', '/channel?id=' . (int)($_SESSION['user']['id'] ?? 0))) ?>;
+    const name    = <?= json_encode($_SESSION['user']['displayName'] ?? '') ?>;
+    const now     = new Date().toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+
+    const el = document.createElement('div');
+    el.className = 'comment';
+    el.innerHTML = `
+        ${avatar}
+        <div class="comment-body">
+            <div class="comment-header">
+                <span class="comment-author">${name}</span>
+                <span class="comment-time">${now}</span>
+            </div>
+            <p class="comment-content">${content.replace(/\n/g, '<br>')}</p>
+            <div class="comment-footer"></div>
+        </div>
+    `;
+
+    const list = document.querySelector('.comments-list');
+    list.prepend(el);
+
+    const countEl = document.querySelector('.comments-title');
+    if (countEl) {
+        const n = parseInt(countEl.textContent) || 0;
+        countEl.textContent = (n + 1) + ' Comments';
+    }
 });
 
-document.getElementById('dislike-btn')?.addEventListener('click', async () => {
-    const videoId = document.getElementById('dislike-btn').dataset.video;
-    const res = await fetch('/like/toggle', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'videoId=' + videoId + '&type=-1&csrf_token=' + csrf
-    });
-    if (res.ok) location.reload();
-});
+// ── Reply submit (AJAX) ──
+document.querySelectorAll('.reply-form').forEach(form => {
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const data    = new FormData(this);
+        const content = data.get('content')?.trim();
+        if (!content) return;
 
-document.getElementById('sub-btn')?.addEventListener('click', async () => {
-    const subscribedToId = document.getElementById('sub-btn').dataset.subscribedTo;
-    const res = await fetch('/sub/toggle', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'subscribedToId=' + subscribedToId + '&csrf_token=' + csrf
-    });
-    if (res.ok) location.reload();
-});
+        const res = await fetch('/comment/store', {
+            method: 'POST',
+            body: new URLSearchParams({
+                videoId:    data.get('videoId'),
+                parentId:   data.get('parentId'),
+                content:    content,
+                csrf_token: csrf
+            })
+        });
 
-document.getElementById('wl-btn')?.addEventListener('click', async () => {
-    const videoId = document.getElementById('wl-btn').dataset.video;
-    const res = await fetch('/watch-later/toggle', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'videoId=' + videoId + '&csrf_token=' + csrf
+        if (!res.ok) return;
+
+        this.style.display = 'none';
+        this.querySelector('textarea').value = '';
+
+        const avatar = <?= json_encode(renderAvatar($_SESSION['user']['avatar'] ?? null, '28px', '/channel?id=' . (int)($_SESSION['user']['id'] ?? 0))) ?>;
+        const name   = <?= json_encode($_SESSION['user']['displayName'] ?? '') ?>;
+        const now    = new Date().toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+
+        const parentId = data.get('parentId');
+        const parentEl = document.getElementById('comment-' + parentId);
+        if (!parentEl) return;
+
+        let repliesEl = parentEl.querySelector('.replies');
+        if (!repliesEl) {
+            repliesEl = document.createElement('div');
+            repliesEl.className = 'replies';
+            parentEl.querySelector('.comment-body').appendChild(repliesEl);
+        }
+
+        const el = document.createElement('div');
+        el.className = 'comment reply';
+        el.innerHTML = `
+            ${avatar}
+            <div class="comment-body">
+                <div class="comment-header">
+                    <span class="comment-author">${name}</span>
+                    <span class="comment-time">${now}</span>
+                </div>
+                <p class="comment-content">${content.replace(/\n/g, '<br>')}</p>
+                <div class="comment-footer"></div>
+            </div>
+        `;
+        repliesEl.appendChild(el);
     });
-    if (res.ok) location.reload();
 });
 </script>

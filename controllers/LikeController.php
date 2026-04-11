@@ -27,6 +27,12 @@ class LikeController
             $active = $this->likeRepo->toggleLike($userId, $videoId);
         }
 
-        echo json_encode(['active' => $active, 'type' => $type]);
+        
+        echo json_encode([
+            'active'       => $active,
+            'type'         => $type,
+            'likeCount'    => $this->likeRepo->countLikes($videoId),
+            'dislikeCount' => $this->likeRepo->countDislikes($videoId),
+        ]);
     }
 }
