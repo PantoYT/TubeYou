@@ -4,18 +4,16 @@
 
     <div class="watch-main">
 
-        <div class="video-player">
-            <video id="player" controls>
-                <source src="<?= htmlspecialchars($video['src']) ?>" type="video/mp4">
-                <source src="<?= htmlspecialchars(preg_replace('/\.mp4$/', '_720p.mp4', $video['src'])) ?>" type="video/mp4">
-                <source src="<?= htmlspecialchars(preg_replace('/\.mp4$/', '_480p.mp4', $video['src'])) ?>" type="video/mp4">
-            </video>
-            <div class="quality-selector">
-                <?php foreach (['1080p', '720p', '480p', '360p'] as $q): ?>
-                    <button class="quality-btn" onclick="changeQuality('<?= $q ?>')"><?= $q ?></button>
-                <?php endforeach; ?>
-            </div>
+    <div class="video-player">
+        <video id="player" controls>
+            <source src="<?= htmlspecialchars($video['src']) ?>" type="video/mp4">
+        </video>
+        <div class="quality-selector">
+            <?php foreach (['1080p', '720p', '480p', '360p'] as $q): ?>
+                <button class="quality-btn" onclick="changeQuality('<?= $q ?>')"><?= $q ?></button>
+            <?php endforeach; ?>
         </div>
+    </div>
 
         <h1><?= htmlspecialchars($video['title']) ?></h1>
 
@@ -287,23 +285,29 @@
 </div>
 
 <script>
-const csrf = document.querySelector('meta[name="csrf"]').content;
+const csrf        = document.querySelector('meta[name="csrf"]').content;
 const originalSrc = <?= json_encode($video['src']) ?>;
-const videoBase   = <?= json_encode(preg_replace('/[^\/]+\.mp4$/', '', $video['src'])) ?>;
+const videoDir    = <?= json_encode(dirname($video['src']) . '/') ?>;
+const baseName    = <?= json_encode(pathinfo($video['src'], PATHINFO_FILENAME)) ?>;
 
 function changeQuality(q) {
-    const video  = document.getElementById('player');
-    const time   = video.currentTime;
-    const paused = video.paused;
-    video.src = videoBase + '_' + q + '.mp4';
-    video.addEventListener('error', function onErr() {
-        video.src = originalSrc;
-        video.currentTime = time;
-        if (!paused) video.play();
-        video.removeEventListener('error', onErr);
+    const vid    = document.getElementById('player');
+    const time   = vid.currentTime;
+    const paused = vid.paused;
+    vid.src      = videoDir + baseName + '_' + q + '.mp4';
+    vid.addEventListener('error', function onErr() {
+        vid.src = originalSrc;
+        vid.load();
+        vid.currentTime = time;
+        if (!paused) vid.play();
+        vid.removeEventListener('error', onErr);
     }, { once: true });
-    video.currentTime = time;
-    if (!paused) video.play();
+    vid.load();
+    vid.currentTime = time;
+    if (!paused) vid.play();
+    document.querySelectorAll('.quality-btn').forEach(b => {
+        b.classList.toggle('active', b.textContent === q);
+    });
 }
 
 document.querySelectorAll('.reply-toggle').forEach(btn => {
