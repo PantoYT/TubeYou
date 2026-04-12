@@ -18,8 +18,8 @@ class MailService
         $this->mail->SMTPAuth   = true;
         $this->mail->Username   = $_ENV['MAIL_USERNAME']   ?? getenv('MAIL_USERNAME');
         $this->mail->Password   = $_ENV['MAIL_PASSWORD']   ?? getenv('MAIL_PASSWORD');
-        $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $this->mail->Port       = $_ENV['MAIL_PORT']       ?? getenv('MAIL_PORT');
+        $this->mail->SMTPSecure = 'ssl';
+        $this->mail->Port       = 465;
         $this->mail->setFrom(
             $_ENV['MAIL_USERNAME']  ?? getenv('MAIL_USERNAME'),
             $_ENV['MAIL_FROM_NAME'] ?? getenv('MAIL_FROM_NAME')
