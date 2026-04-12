@@ -119,4 +119,10 @@ class UserRepository
         $stmt = $this->db->prepare("UPDATE users SET banner = ? WHERE id = ?");
         $stmt->execute([$path, $id]);
     }
+
+    public function deleteByEmail(string $email): void
+    {
+        $stmt = $this->db->prepare("DELETE FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+    }
 }

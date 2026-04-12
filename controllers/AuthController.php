@@ -90,12 +90,12 @@ class AuthController
             $mailer = new MailService();
             $mailer->sendVerification($email, $name, $token);
         } catch (Exception $e) {
-            render('auth/register-success', [
-                'email'   => $email,
-                'mailWarn' => 'Could not send verification email. Contact support or try again later.'
-            ]);
+            $this->userRepo->deleteByEmail($email);
+            render('auth/register', ['errors' => ['Could not send verification email. Try again.']]);
             return;
         }
+
+render('auth/register-success', ['email' => $email]);
 
         render('auth/register-success', ['email' => $email]);
     }
