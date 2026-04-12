@@ -8,6 +8,7 @@ class VideoController
     private CommentRepository $commentRepo;
     private FeedRepository $feedRepo;
     private TagRepository $tagRepo;
+    private PlaylistRepository $playlistRepo;
 
     private string $ffmpeg  = 'C:\\ffmpeg\\bin\\ffmpeg.exe';
     private string $ffprobe = 'C:\\ffmpeg\\bin\\ffprobe.exe';
@@ -18,7 +19,8 @@ class VideoController
         SubRepository $subRepo,
         CommentRepository $commentRepo,
         FeedRepository $feedRepo,
-        TagRepository $tagRepo
+        TagRepository $tagRepo,
+        PlaylistRepository $playlistRepo
     ) {
         $this->videoRepo   = $videoRepo;
         $this->likeRepo    = $likeRepo;
@@ -26,6 +28,7 @@ class VideoController
         $this->commentRepo = $commentRepo;
         $this->feedRepo    = $feedRepo;
         $this->tagRepo     = $tagRepo;
+        $this->playlistRepo = $playlistRepo;
     }
 
     public function homepage()
@@ -77,6 +80,7 @@ class VideoController
             $isSubbed     = $this->subRepo->isSubbed($userId, $video['userId']);
             $isWatchLater = $this->feedRepo->isInWatchLater($userId, (int)$id);
             $this->feedRepo->recordHistory($userId, (int)$id);
+            $userPlaylists = $this->playlistRepo->getForUser($userId);
         }
 
         $commentPage    = max(1, (int)($_GET['cpage'] ?? 1));
@@ -105,6 +109,7 @@ class VideoController
             'commentPages'  => $commentPages,
             'suggested'     => $suggested,
             'sort'          => $sort,
+            'userPlaylists' => $userPlaylists ?? [],
         ]);
     }
 
@@ -244,5 +249,102 @@ class VideoController
         $name   = trim($_GET['name'] ?? '');
         $videos = $name ? $this->tagRepo->getVideosByTag($name) : [];
         render('main/tag', ['videos' => $videos, 'tag' => $name]);
+    }
+
+    public function delete()
+    {
+        csrfVerify();
+
+        if (!isset($_SESSION['user']['id'])) {
+            http_response_code(403);
+            exit;
+        }
+
+        $userId  = $_SESSION['user']['id'];
+        $videoId = (int)($_POST['videoId'] ?? 0);
+        $video   = $this->videoRepo->findById($videoId);
+
+        if (!$video || (int)$video['userId'] !== $userId) {
+            http_response_code(403);
+            exit;
+        }
+
+        $videoDir = __DIR__ . '/../public' . dirname($video['src']) . '/';
+        $baseName = pathinfo($video['src'], PATHINFO_FILENAME);
+
+        $this->deleteFile($videoDir . $baseName . '.mp4');
+
+        foreach (['1080p', '720p', '480p', '360p'] as $q) {
+            $this->deleteFile($videoDir . $baseName . '_' . $q . '.mp4');
+        }
+
+        $this->deleteFile($videoDir . $baseName . '_thumb.jpg');
+
+        $thumbPath = __DIR__ . '/../public' . $video['thumbnail'];
+        $this->deleteFile($thumbPath);
+
+        $this->videoRepo->delete($videoId, $userId);
+
+        header('Location: /channel?id=' . $userId);
+        exit;
+    }
+
+    private function deleteFile(string $path): void
+    {
+        if (file_exists($path) && is_file($path)) {
+            unlink($path);
+        }
+    }
+
+    public function editForm()
+    {
+        if (!isset($_SESSION['user']['id'])) {
+            header('Location: /login');
+            exit;
+        }
+
+        $videoId = (int)($_GET['id'] ?? 0);
+        $video   = $this->videoRepo->findById($videoId);
+
+        if (!$video || (int)$video['userId'] !== (int)$_SESSION['user']['id']) {
+            http_response_code(403);
+            render('errors/404');
+            return;
+        }
+
+        $tags = $this->tagRepo->getForVideo($videoId);
+
+        render('main/video_edit', [
+            'video' => $video,
+            'tags'  => implode(', ', $tags),
+        ]);
+    }
+
+    public function edit()
+    {
+        csrfVerify();
+
+        if (!isset($_SESSION['user']['id'])) {
+            header('Location: /login');
+            exit;
+        }
+
+        $userId      = $_SESSION['user']['id'];
+        $videoId     = (int)($_POST['videoId'] ?? 0);
+        $title       = sanitizeTitle($_POST['title'] ?? '');
+        $description = sanitizeText($_POST['description'] ?? '', 5000);
+        $tags        = trim($_POST['tags'] ?? '');
+
+        $video = $this->videoRepo->findById($videoId);
+        if (!$video || (int)$video['userId'] !== $userId) {
+            http_response_code(403);
+            exit;
+        }
+
+        $this->videoRepo->update($videoId, $userId, $title, $description);
+        $this->tagRepo->syncTags($videoId, $tags);
+
+        header('Location: /watch?id=' . $videoId);
+        exit;
     }
 }

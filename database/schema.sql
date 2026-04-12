@@ -125,3 +125,23 @@ create table if not exists notifications (
     foreign key (fromUserId) references users(id) on delete cascade,
     foreign key (videoId)    references videos(id) on delete cascade
 );
+
+create table if not exists playlists (
+    id          int primary key auto_increment,
+    userId      int not null,
+    title       varchar(255) not null,
+    description text,
+    isPublic    tinyint(1) default 1,
+    createdAt   timestamp default current_timestamp,
+    foreign key (userId) references users(id) on delete cascade
+);
+
+create table if not exists playlistVideos (
+    playlistId  int not null,
+    videoId     int not null,
+    position    int default 0,
+    addedAt     timestamp default current_timestamp,
+    primary key (playlistId, videoId),
+    foreign key (playlistId) references playlists(id) on delete cascade,
+    foreign key (videoId)    references videos(id)    on delete cascade
+);

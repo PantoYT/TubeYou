@@ -42,6 +42,17 @@
                         <?= date('M d, Y', strtotime($video['createdAt'])) ?>
                     </p>
                 </div>
+                <?php if (isset($_SESSION['user']['id']) && (int)$_SESSION['user']['id'] === (int)$video['userId']): ?>
+                    <div style="display:flex;gap:8px;margin-top:0.75rem;">
+                        <a href="/video/edit?id=<?= (int)$video['id'] ?>" class="btn">Edit video</a>
+                        <form method="POST" action="/video/delete"
+                            onsubmit="return confirm('Delete this video?')" style="margin:0;">
+                            <?= csrfField() ?>
+                            <input type="hidden" name="videoId" value="<?= (int)$video['id'] ?>">
+                            <button type="submit" class="btn btn-danger">Delete video</button>
+                        </form>
+                    </div>
+                <?php endif; ?>
             </div>
         <?php endforeach; ?>
     </div>

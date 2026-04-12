@@ -21,6 +21,9 @@ return [
         '/tag' => ['controller' => 'VideoController', 'action' => 'tag'],
         '/watch-later' => ['controller' => 'FeedController', 'action' => 'watchLater'],
         '/notifications' => ['controller' => 'NotificationController', 'action' => 'index'],
+        '/video/edit' => ['controller' => 'VideoController', 'action' => 'editForm'],
+        '/playlists'  => ['controller' => 'PlaylistController', 'action' => 'index'],
+        '/playlist'   => ['controller' => 'PlaylistController', 'action' => 'show'],
     ],
     'POST' => [
         '/login' => ['controller' => 'AuthController', 'action' => 'login'],
@@ -41,5 +44,11 @@ return [
         '/tag' => ['controller' => 'VideoController', 'action' => 'tag'],
         '/watch-later/toggle' => ['controller' => 'FeedController', 'action' => 'toggleWatchLater'],
         '/notifications/read' => ['controller' => 'NotificationController', 'action' => 'markRead'],
+        '/video/delete' => ['controller' => 'VideoController', 'action' => 'delete'],
+        '/video/edit' => ['controller' => 'VideoController', 'action' => 'edit'],
+        '/playlist/create'       => ['controller' => 'PlaylistController', 'action' => 'create'],
+        '/playlist/add-video'    => ['controller' => 'PlaylistController', 'action' => 'addVideo'],
+        '/playlist/remove-video' => ['controller' => 'PlaylistController', 'action' => 'removeVideo'],
+        '/playlist/delete'       => ['controller' => 'PlaylistController', 'action' => 'delete'],
     ]
 ];

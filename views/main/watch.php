@@ -61,6 +61,31 @@
             <p><?= nl2br(htmlspecialchars($video['description'])) ?></p>
         </div>
 
+        <?php if (isset($_SESSION['user']['id']) && (int)$_SESSION['user']['id'] === (int)$video['userId']): ?>
+            <div style="display:flex;gap:8px;margin-top:0.75rem;">
+                <a href="/video/edit?id=<?= (int)$video['id'] ?>" class="btn">Edit video</a>
+                <form method="POST" action="/video/delete"
+                    onsubmit="return confirm('Delete this video?')" style="margin:0;">
+                    <?= csrfField() ?>
+                    <input type="hidden" name="videoId" value="<?= (int)$video['id'] ?>">
+                    <button type="submit" class="btn btn-danger">Delete video</button>
+                </form>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['user']['id']) && !empty($userPlaylists ?? [])): ?>
+            <div style="margin-top:8px;">
+                <select id="playlist-select" style="height:36px;padding:0 8px;border:1.5px solid var(--border);
+                        border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:0.85rem;">
+                    <option value="">Add to playlist...</option>
+                    <?php foreach ($userPlaylists as $pl): ?>
+                        <option value="<?= $pl['id'] ?>"><?= htmlspecialchars($pl['title']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <button onclick="addToPlaylist()" class="btn" style="margin-left:6px;">Add</button>
+            </div>
+        <?php endif; ?>
+
         <?php if (!empty($tags)): ?>
             <div class="video-tags">
                 <?php foreach ($tags as $tag): ?>
@@ -578,4 +603,95 @@ document.querySelectorAll('.reply-form').forEach(form => {
         repliesEl.appendChild(el);
     });
 });
+
+// ── Keyboard shortcuts ──
+const player = document.getElementById('player');
+
+document.addEventListener('keydown', (e) => {
+    if (['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+    switch(e.key) {
+        case ' ':
+        case 'k':
+            e.preventDefault();
+            player.paused ? player.play() : player.pause();
+            break;
+        case 'ArrowRight':
+        case 'l':
+            e.preventDefault();
+            player.currentTime = Math.min(player.duration, player.currentTime + 5);
+            break;
+        case 'ArrowLeft':
+        case 'j':
+            e.preventDefault();
+            player.currentTime = Math.max(0, player.currentTime - 5);
+            break;
+        case 'ArrowUp':
+            e.preventDefault();
+            player.volume = Math.min(1, player.volume + 0.1);
+            break;
+        case 'ArrowDown':
+            e.preventDefault();
+            player.volume = Math.max(0, player.volume - 0.1);
+            break;
+        case 'f':
+            e.preventDefault();
+            document.fullscreenElement ? document.exitFullscreen() : player.requestFullscreen();
+            break;
+        case 'm':
+            e.preventDefault();
+            player.muted = !player.muted;
+            break;
+    }
+});
+
+// ── Autoplay + Repeat ──
+let repeatOn = localStorage.getItem('repeat') === '1';
+
+const autoplayBar = document.createElement('div');
+autoplayBar.style.cssText = 'display:flex;align-items:center;gap:12px;padding:8px 0;font-size:0.85rem;color:var(--text-muted);';
+autoplayBar.innerHTML = `
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+        <input type="checkbox" id="repeat-toggle" ${repeatOn ? 'checked' : ''}>
+        Repeat
+    </label>
+    <span style="color:var(--border);">|</span>
+    <span style="font-size:0.8rem;">Space/K=pause · J/L=±5s · F=fullscreen · M=mute · ↑↓=volume</span>
+`;
+
+document.querySelector('.video-player').after(autoplayBar);
+
+document.getElementById('repeat-toggle').addEventListener('change', function() {
+    repeatOn = this.checked;
+    localStorage.setItem('repeat', repeatOn ? '1' : '0');
+    player.loop = repeatOn;
+});
+
+player.loop = repeatOn;
+
+// Autoplay next
+<?php if (!empty($suggested)): ?>
+const nextVideoUrl = <?= json_encode('/watch?id=' . (int)$suggested[0]['id']) ?>;
+
+player.addEventListener('ended', () => {
+    if (!repeatOn) {
+        window.location.href = nextVideoUrl;
+    }
+});
+<?php endif; ?>
+
+function addToPlaylist() {
+    const select = document.getElementById('playlist-select');
+    const playlistId = select.value;
+    if (!playlistId) return;
+
+    fetch('/playlist/add-video', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `playlistId=${playlistId}&videoId=<?= (int)$video['id'] ?>&csrf_token=${csrf}`
+    }).then(r => r.json()).then(() => {
+        select.value = '';
+        alert('Added to playlist!');
+    });
+}
 </script>

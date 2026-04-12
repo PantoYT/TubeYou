@@ -1,4 +1,6 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 require_once __DIR__ . '/../bootstrap.php';
 
@@ -20,7 +22,10 @@ if (isset($routes[$method][$uri])) {
     
     $controller = match ($route['controller']) {
         'AuthController' => new AuthController($userRepo),
-        'VideoController' => new VideoController($videoRepo,$likeRepo,$subRepo,$commentRepo,$feedRepo, $tagRepo),
+        'VideoController' => new VideoController(
+            $videoRepo, $likeRepo, $subRepo, 
+            $commentRepo, $feedRepo, $tagRepo, $playlistRepo
+        ),
         'LikeController' => new LikeController($likeRepo),
         'SubController' => new SubController($subRepo, $notifRepo),
         'SettingsController' => new SettingsController($userRepo),
@@ -28,6 +33,7 @@ if (isset($routes[$method][$uri])) {
         'ChannelController' => new ChannelController($userRepo, $videoRepo, $subRepo),
         'FeedController' => new FeedController($feedRepo),
         'NotificationController' => new NotificationController($notifRepo),
+        'PlaylistController' => new PlaylistController($playlistRepo),
         default => null
     };
 

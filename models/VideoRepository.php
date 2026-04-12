@@ -139,4 +139,21 @@ class VideoRepository
     {
         return $this->db->lastInsertId();
     }
+
+    public function delete(int $videoId, int $userId): bool
+    {
+        $stmt = $this->db->prepare(
+            "DELETE FROM videos WHERE id = ? AND userId = ?"
+        );
+        $stmt->execute([$videoId, $userId]);
+        return $stmt->rowCount() > 0;
+    }
+
+    public function update(int $videoId, int $userId, string $title, string $description): void
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE videos SET title = ?, description = ? WHERE id = ? AND userId = ?"
+        );
+        $stmt->execute([$title, $description, $videoId, $userId]);
+    }
 }
