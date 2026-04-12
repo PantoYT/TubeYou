@@ -14,14 +14,17 @@ class MailService
     {
         $this->mail = new PHPMailer(true);
         $this->mail->isSMTP();
-        $this->mail->Host       = $_ENV['MAIL_HOST'];
+        $this->mail->Host       = $_ENV['MAIL_HOST']       ?? getenv('MAIL_HOST');
         $this->mail->SMTPAuth   = true;
-        $this->mail->Username   = $_ENV['MAIL_USERNAME'];
-        $this->mail->Password   = $_ENV['MAIL_PASSWORD'];
+        $this->mail->Username   = $_ENV['MAIL_USERNAME']   ?? getenv('MAIL_USERNAME');
+        $this->mail->Password   = $_ENV['MAIL_PASSWORD']   ?? getenv('MAIL_PASSWORD');
         $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $this->mail->Port       = $_ENV['MAIL_PORT'];
-        $this->mail->setFrom($_ENV['MAIL_USERNAME'], $_ENV['MAIL_FROM_NAME']);
-        $this->mail->CharSet    = 'UTF-8';
+        $this->mail->Port       = $_ENV['MAIL_PORT']       ?? getenv('MAIL_PORT');
+        $this->mail->setFrom(
+            $_ENV['MAIL_USERNAME']  ?? getenv('MAIL_USERNAME'),
+            $_ENV['MAIL_FROM_NAME'] ?? getenv('MAIL_FROM_NAME')
+        );
+        $this->mail->CharSet = 'UTF-8';
     }
 
     public function sendVerification(string $toEmail, string $toName, string $token): void
