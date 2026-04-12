@@ -25,3 +25,10 @@ $feedRepo     = new FeedRepository($db);
 $tagRepo      = new TagRepository($db);
 $notifRepo    = new NotificationRepository($db);
 $playlistRepo = new PlaylistRepository($db);
+$studioController = new StudioController(
+    $videoRepo,
+    $likeRepo,
+    $commentRepo,
+    $subRepo,
+    $tagRepo
+);

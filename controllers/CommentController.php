@@ -84,8 +84,15 @@ class CommentController
 
         $this->commentRepo->toggleLike($userId, $commentId, $type);
 
-        header('Location: /watch?id=' . $videoId . '#comments');
-        exit;
+        $likes    = $this->commentRepo->countCommentLikes($commentId);
+        $dislikes = $this->commentRepo->countCommentDislikes($commentId);
+        $userLike = $this->commentRepo->getUserCommentLike($userId, $commentId);
+
+        echo json_encode([
+            'likes'    => $likes,
+            'dislikes' => $dislikes,
+            'userType' => $userLike ? (int)$userLike['type'] : null,
+        ]);
     }
 
     public function edit()

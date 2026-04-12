@@ -98,7 +98,9 @@ class VideoController
         $sort           = in_array($_GET['sort'] ?? 'new', ['new', 'top'])
                           ? ($_GET['sort'] ?? 'new') : 'new';
 
-        $comments     = $this->commentRepo->getForVideoPaginated((int)$id, $commentPage, $commentPerPage, $sort);
+        $comments = $this->commentRepo->getForVideoPaginated(
+        (int)$id, $commentPage, $commentPerPage, $sort, $userId ?? 0
+        );
         $commentCount = $this->commentRepo->count((int)$id);
         $commentPages = (int)ceil($commentCount / $commentPerPage);
         $suggested    = $this->videoRepo->findSuggested((int)$id, $userId ?? 0);

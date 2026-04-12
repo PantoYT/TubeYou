@@ -23,7 +23,7 @@ The project focuses on clean architecture (MVC), performance, and understanding 
   - pinning  
   - editing  
 - User profiles (avatar, banner, bio)
-- Email verification & password reset (PHPMailer + Gmail SMTP)
+- Email verification & password reset (Resend API)
 - Dark mode
 - Full-text search
 - Algorithm-based feed scoring
@@ -34,7 +34,7 @@ The project focuses on clean architecture (MVC), performance, and understanding 
 - PHP 8.x (no framework)
 - MariaDB
 - Vanilla JavaScript
-- PHPMailer
+- Resend API (email)
 - vlucas/phpdotenv
 - Docker + Docker Compose
 

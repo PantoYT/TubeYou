@@ -34,6 +34,7 @@ if (isset($routes[$method][$uri])) {
         'FeedController' => new FeedController($feedRepo),
         'NotificationController' => new NotificationController($notifRepo),
         'PlaylistController' => new PlaylistController($playlistRepo),
+        'StudioController' => $studioController,
         default => null
     };
 

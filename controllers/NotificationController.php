@@ -31,4 +31,15 @@ class NotificationController
         $this->notifRepo->markAllRead($_SESSION['user']['id']);
         echo json_encode(['ok' => true]);
     }
+
+    public function count()
+    {
+        if (!isset($_SESSION['user']['id'])) {
+            echo json_encode(['count' => 0]);
+            return;
+        }
+        $count = $this->notifRepo->countUnread($_SESSION['user']['id']);
+        header('Content-Type: application/json');
+        echo json_encode(['count' => (int)$count]);
+    }
 }

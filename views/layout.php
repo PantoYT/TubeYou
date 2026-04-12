@@ -26,24 +26,17 @@
 
         <div class="navbar-right">
             <?php if (isset($_SESSION['user'])): ?>
-                <a href="/upload" class="btn btn-primary">
+
+                <a href="/studio" class="btn btn-primary">
                     <img src="/images/icons/plus.svg" class="nav-icon nav-icon-white">
-                    Upload
+                    Studio
                 </a>
 
                 <?php $unread = isset($notifRepo) ? $notifRepo->countUnread($_SESSION['user']['id']) : 0; ?>
-                <a href="/notifications" class="btn" style="position:relative;padding:0 0.6rem;">
-                    <img src="/images/icons/<?= $unread > 0 ? 'bell-ringing' : 'bell' ?>.svg"
-                         class="nav-icon" style="margin:0;">
-                    <?php if ($unread > 0): ?>
-                        <span style="
-                            position:absolute;top:-4px;right:-4px;
-                            background:var(--primary);color:white;
-                            border-radius:50%;width:16px;height:16px;
-                            font-size:0.65rem;font-weight:700;
-                            display:flex;align-items:center;justify-content:center;
-                        "><?= min($unread, 99) ?></span>
-                    <?php endif; ?>
+
+                <a href="/notifications" class="btn notif-bell-btn" style="position:relative;padding:0 0.6rem;" id="notif-bell">
+                    <img src="/images/icons/bell.svg" class="nav-icon" style="margin:0;" id="notif-bell-icon">
+                    <span id="notif-badge"></span>
                 </a>
 
                 <div class="avatar-menu">
@@ -71,15 +64,19 @@
                 </div>
 
             <?php else: ?>
+
                 <button id="theme-toggle" class="btn" style="padding:0 0.6rem;">
                     <img id="theme-icon" src="/images/icons/moon.svg" class="nav-icon" style="margin:0;">
                 </button>
+
                 <a href="/login" class="btn">
                     <img src="/images/icons/login.svg" class="nav-icon"> Login
                 </a>
+
                 <a href="/register" class="btn btn-primary">
                     <img src="/images/icons/plus.svg" class="nav-icon nav-icon-white"> Register
                 </a>
+
             <?php endif; ?>
         </div>
     </nav>
@@ -166,6 +163,52 @@
             avatarDropdown?.classList.remove('open');
         }
     });
+
+    (() => {
+        const badge = document.getElementById('notif-badge');
+        const bell  = document.getElementById('notif-bell-icon');
+
+        if (!badge || !bell) return;
+
+        function setNotificationCount(count) {
+            const hasNotifications = count > 0;
+
+            badge.style.display = hasNotifications ? 'flex' : 'none';
+
+            if (hasNotifications) {
+                badge.textContent = count > 99 ? '99+' : count;
+                bell.src = '/images/icons/bell-ringing.svg';
+            } else {
+                bell.src = '/images/icons/bell.svg';
+            }
+        }
+
+        async function fetchNotificationCount() {
+            try {
+                const response = await fetch('/notifications/count', {
+                    cache: 'no-store'
+                });
+
+                if (!response.ok) return;
+
+                const data = await response.json();
+                setNotificationCount(data.count ?? 0);
+
+            } catch (e) {
+                console.warn('Notification fetch failed');
+            }
+        }
+
+        const initialCount = <?= (int)($unread ?? 0) ?>;
+        setNotificationCount(initialCount);
+
+        fetchNotificationCount();
+        setInterval(fetchNotificationCount, 30000);
+
+        if (window.location.pathname === '/notifications') {
+            setNotificationCount(0);
+        }
+    })();
     </script>
 </body>
 </html>

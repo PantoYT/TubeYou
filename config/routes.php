@@ -24,6 +24,8 @@ return [
         '/video/edit' => ['controller' => 'VideoController', 'action' => 'editForm'],
         '/playlists'  => ['controller' => 'PlaylistController', 'action' => 'index'],
         '/playlist'   => ['controller' => 'PlaylistController', 'action' => 'show'],
+        '/studio'     => ['controller' => 'StudioController', 'action' => 'index'],
+        '/notifications/count', ['controler' => 'NotificationController', 'action' => 'count'],
     ],
     'POST' => [
         '/login' => ['controller' => 'AuthController', 'action' => 'login'],
@@ -50,5 +52,6 @@ return [
         '/playlist/add-video'    => ['controller' => 'PlaylistController', 'action' => 'addVideo'],
         '/playlist/remove-video' => ['controller' => 'PlaylistController', 'action' => 'removeVideo'],
         '/playlist/delete'       => ['controller' => 'PlaylistController', 'action' => 'delete'],
+        '/studio/quick-edit'     => ['controller' => 'StudioController', 'action' => 'quickEdit'],
     ]
 ];

@@ -119,7 +119,7 @@ class CommentRepository
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getForVideoPaginated(int $videoId, int $page = 1, int $perPage = 10, string $sort = 'new'): array
+    public function getForVideoPaginated(int $videoId, int $page = 1, int $perPage = 10, string $sort = 'new', int $currentUserId = 0): array
     {
         $offset = ($page - 1) * $perPage;
         $order  = $sort === 'top'
@@ -129,7 +129,8 @@ class CommentRepository
         $stmt = $this->db->prepare(
             "SELECT c.*, u.displayName, u.avatar,
                     SUM(CASE WHEN cl.type = 1  THEN 1 ELSE 0 END) as likes,
-                    SUM(CASE WHEN cl.type = -1 THEN 1 ELSE 0 END) as dislikes
+                    SUM(CASE WHEN cl.type = -1 THEN 1 ELSE 0 END) as dislikes,
+                    MAX(CASE WHEN cl.userId = ? THEN cl.type ELSE NULL END) as myLike
             FROM comments c
             JOIN users u ON c.userId = u.id
             LEFT JOIN commentLikes cl ON cl.commentId = c.id
@@ -138,13 +139,14 @@ class CommentRepository
             {$order}
             LIMIT ? OFFSET ?"
         );
-        $stmt->bindValue(1, $videoId, PDO::PARAM_INT);
-        $stmt->bindValue(2, $perPage, PDO::PARAM_INT);
-        $stmt->bindValue(3, $offset,  PDO::PARAM_INT);
+        $stmt->bindValue(1, $currentUserId, PDO::PARAM_INT);
+        $stmt->bindValue(2, $videoId,       PDO::PARAM_INT);
+        $stmt->bindValue(3, $perPage,       PDO::PARAM_INT);
+        $stmt->bindValue(4, $offset,        PDO::PARAM_INT);
         $stmt->execute();
         $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
         foreach ($comments as &$comment) {
-            $comment['replies'] = $this->getReplies($comment['id']);
+            $comment['replies'] = $this->getRepliesWithLikes($comment['id'], $currentUserId);
         }
         return $comments;
     }
@@ -162,5 +164,52 @@ class CommentRepository
         $stmt = $this->db->prepare("SELECT userId FROM videos WHERE id = ?");
         $stmt->execute([$videoId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function countCommentLikes(int $commentId): int
+    {
+        $stmt = $this->db->prepare(
+            "SELECT COUNT(*) FROM commentLikes WHERE commentId = ? AND type = 1"
+        );
+        $stmt->execute([$commentId]);
+        return (int)$stmt->fetchColumn();
+    }
+
+    public function countCommentDislikes(int $commentId): int
+    {
+        $stmt = $this->db->prepare(
+            "SELECT COUNT(*) FROM commentLikes WHERE commentId = ? AND type = -1"
+        );
+        $stmt->execute([$commentId]);
+        return (int)$stmt->fetchColumn();
+    }
+
+    public function getUserCommentLike(int $userId, int $commentId): array|false
+    {
+        $stmt = $this->db->prepare(
+            "SELECT type FROM commentLikes WHERE userId = ? AND commentId = ?"
+        );
+        $stmt->execute([$userId, $commentId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getRepliesWithLikes(int $parentId, int $currentUserId = 0): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT c.*, u.displayName, u.avatar,
+                    SUM(CASE WHEN cl.type = 1  THEN 1 ELSE 0 END) as likes,
+                    SUM(CASE WHEN cl.type = -1 THEN 1 ELSE 0 END) as dislikes,
+                    MAX(CASE WHEN cl.userId = ? THEN cl.type ELSE NULL END) as myLike
+            FROM comments c
+            JOIN users u ON c.userId = u.id
+            LEFT JOIN commentLikes cl ON cl.commentId = c.id
+            WHERE c.parentId = ?
+            GROUP BY c.id
+            ORDER BY c.createdAt ASC"
+        );
+        $stmt->bindValue(1, $currentUserId, PDO::PARAM_INT);
+        $stmt->bindValue(2, $parentId,      PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
