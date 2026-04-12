@@ -48,24 +48,24 @@ from (
 where n <= @userCount;
 
 -- =========================
--- FILMY (PANTO ONLY)
+-- FILMY (PANTO ONLY) - 360p as default src
 -- =========================
 insert into videos (title, src, userId, thumbnail, description, duration, views)
-select 'I like the way you kiss me','/uploads/videos/1/69ce646e471917.68634994.mp4',id,'/uploads/thumbnails/1/69ce646e471917.68634994.jpg','Valorant montage',70, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
+select 'I like the way you kiss me','/uploads/videos/1/69ce646e471917.68634994_360p.mp4',id,'/uploads/thumbnails/1/69ce646e471917.68634994.jpg','Valorant montage',70, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
 union all
-select 'Bombs Away','/uploads/videos/1/69cf1564e75d5.mp4',id,'/uploads/thumbnails/1/69cf1564e9b65.jpg','Valorant montage',76, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
+select 'Bombs Away','/uploads/videos/1/69cf1564e75d5_360p.mp4',id,'/uploads/thumbnails/1/69cf1564e9b65.jpg','Valorant montage',76, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
 union all
-select 'Bones','/uploads/videos/1/69cf159cc35b5.mp4',id,'/uploads/thumbnails/1/69cf159cc35b8.jpg','Valorant montage',107, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
+select 'Bones','/uploads/videos/1/69cf159cc35b5_360p.mp4',id,'/uploads/thumbnails/1/69cf159cc35b8.jpg','Valorant montage',107, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
 union all
-select 'Cupid','/uploads/videos/1/69cf15bbcf7f3.mp4',id,'/uploads/thumbnails/1/69cf15bbcf7f5.jpg','Valorant montage',146, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
+select 'Cupid','/uploads/videos/1/69cf15bbcf7f3_360p.mp4',id,'/uploads/thumbnails/1/69cf15bbcf7f5.jpg','Valorant montage',146, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
 union all
-select 'Hills','/uploads/videos/1/69cf15f125ba3.mp4',id,'/uploads/thumbnails/1/69cf15f125ba6.jpg','Valorant montage',73, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
+select 'Hills','/uploads/videos/1/69cf15f125ba3_360p.mp4',id,'/uploads/thumbnails/1/69cf15f125ba6.jpg','Valorant montage',73, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
 union all
-select 'I Aint Worried','/uploads/videos/1/69cf1604d17b4.mp4',id,'/uploads/thumbnails/1/69cf1604d17b6.jpg','Valorant montage',110, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
+select 'I Aint Worried','/uploads/videos/1/69cf1604d17b4_360p.mp4',id,'/uploads/thumbnails/1/69cf1604d17b6.jpg','Valorant montage',110, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
 union all
-select 'No Lie','/uploads/videos/1/69cf164c2abcd.mp4',id,'/uploads/thumbnails/1/69cf164c2abcf.jpg','Valorant montage',58, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
+select 'No Lie','/uploads/videos/1/69cf164c2abcd_360p.mp4',id,'/uploads/thumbnails/1/69cf164c2abcf.jpg','Valorant montage',58, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
 union all
-select 'Sunroof','/uploads/videos/1/69cf1660d60b8.mp4',id,'/uploads/thumbnails/1/69cf1660d60ba.jpg','Valorant montage',90, floor(200 + rand()*2000) from users where email='panto@tubeyou.com';
+select 'Sunroof','/uploads/videos/1/69cf1660d60b8_360p.mp4',id,'/uploads/thumbnails/1/69cf1660d60ba.jpg','Valorant montage',90, floor(200 + rand()*2000) from users where email='panto@tubeyou.com';
 
 -- =========================
 -- SUBY (wszyscy -> Panto)

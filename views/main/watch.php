@@ -313,7 +313,8 @@
 const csrf        = document.querySelector('meta[name="csrf"]').content;
 const originalSrc = <?= json_encode($video['src']) ?>;
 const videoDir    = <?= json_encode(dirname($video['src']) . '/') ?>;
-const baseName    = <?= json_encode(pathinfo($video['src'], PATHINFO_FILENAME)) ?>;
+const rawName  = <?= json_encode(pathinfo($video['src'], PATHINFO_FILENAME)) ?>;
+const baseName = rawName.replace(/_\d+p$/, '');
 
 function changeQuality(q) {
     const vid    = document.getElementById('player');

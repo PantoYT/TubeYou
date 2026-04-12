@@ -10,8 +10,8 @@ class VideoController
     private TagRepository $tagRepo;
     private PlaylistRepository $playlistRepo;
 
-    private string $ffmpeg  = 'C:\\ffmpeg\\bin\\ffmpeg.exe';
-    private string $ffprobe = 'C:\\ffmpeg\\bin\\ffprobe.exe';
+    private string $ffmpeg;
+    private string $ffprobe;
 
     public function __construct(
         VideoRepository $videoRepo,
@@ -22,6 +22,16 @@ class VideoController
         TagRepository $tagRepo,
         PlaylistRepository $playlistRepo
     ) {
+        if (isset($_ENV['FFMPEG_PATH'])) {
+            $this->ffmpeg  = $_ENV['FFMPEG_PATH'];
+            $this->ffprobe = $_ENV['FFPROBE_PATH'];
+        } elseif (PHP_OS_FAMILY === 'Windows') {
+            $this->ffmpeg  = 'C:\\ffmpeg\\bin\\ffmpeg.exe';
+            $this->ffprobe = 'C:\\ffmpeg\\bin\\ffprobe.exe';
+        } else {
+            $this->ffmpeg  = 'ffmpeg';
+            $this->ffprobe = 'ffprobe';
+        }
         $this->videoRepo   = $videoRepo;
         $this->likeRepo    = $likeRepo;
         $this->subRepo     = $subRepo;
@@ -200,7 +210,7 @@ class VideoController
         }
 
         // Auto thumbnail z 3. sekundy
-        if (file_exists($this->ffmpeg)) {
+        if (!empty($this->ffmpeg)) {
             shell_exec(
                 escapeshellarg($this->ffmpeg) .
                 " -y -i " . escapeshellarg($input) .
@@ -210,7 +220,7 @@ class VideoController
         }
 
         // Quality transcoding
-        if (file_exists($this->ffmpeg)) {
+        if (!empty($this->ffmpeg)) {
             $qualities = [
                 '1080p' => 'scale=1920:1080:force_original_aspect_ratio=decrease',
                 '720p'  => 'scale=1280:720:force_original_aspect_ratio=decrease',

@@ -3,13 +3,24 @@
 
 # Uploads - you ain't getting my videos good sir/ma'am
 # and p.s. they just take up to much space and git won't let me :(
-/public/uploads/videos/*
-/public/uploads/thumbnails/*
-/public/uploads/avatars/*
-/public/uploads/banners/*
+/public/uploads/videos/*/*_1080p.mp4
+/public/uploads/videos/*/*_720p.mp4
+/public/uploads/videos/*/*_480p.mp4
+/public/uploads/videos/1/69ce646e471917.68634994.mp4
+/public/uploads/videos/1/69cf1564e75d5.mp4
+/public/uploads/videos/1/69cf159cc35b5.mp4
+/public/uploads/videos/1/69cf15bbcf7f3.mp4
+/public/uploads/videos/1/69cf15f125ba3.mp4
+/public/uploads/videos/1/69cf1604d17b4.mp4
+/public/uploads/videos/1/69cf164c2abcd.mp4
+/public/uploads/videos/1/69cf1660d60b8.mp4
+
 
 # Vendor
 /vendor/
 
 # Storage
 /storage/
+
+# Docker
+.dockerignore
