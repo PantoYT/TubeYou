@@ -81,12 +81,23 @@ class AuthController
 
         try {
             $this->userRepo->saveUnverified($email, $name, $password, $token);
+        } catch (Exception $e) {
+            render('auth/register', ['errors' => ['Registration failed. Try again.']]);
+            return;
+        }
+
+        try {
             $mailer = new MailService();
             $mailer->sendVerification($email, $name, $token);
-            render('auth/register-success', ['email' => $email]);
         } catch (Exception $e) {
-            render('auth/register', ['errors' => ['Mail error: ' . $e->getMessage()]]);
+            render('auth/register-success', [
+                'email'   => $email,
+                'mailWarn' => 'Could not send verification email. Contact support or try again later.'
+            ]);
+            return;
         }
+
+        render('auth/register-success', ['email' => $email]);
     }
 
     public function verify()

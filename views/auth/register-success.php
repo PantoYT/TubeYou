@@ -1,4 +1,7 @@
 <?php $title = 'Check your email'; ?>
+<?php if (!empty($mailWarn)): ?>
+    <p style="color:orange"><?= htmlspecialchars($mailWarn) ?></p>
+<?php endif; ?>
 
 <div class="auth-container">
     <h1 style="color:var(--primary);">Check your email</h1>
