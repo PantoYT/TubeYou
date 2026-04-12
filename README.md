@@ -4,6 +4,9 @@ A YouTube-inspired video platform built with PHP (MVC), MariaDB, and vanilla JS.
 
 ---
 
+## 🌐 Live Demo
+[tubeyou-spvl.onrender.com](https://tubeyou-spvl.onrender.com)
+
 ## 🚀 Overview
 TubeYou is a full-stack web application replicating core YouTube features, built from scratch without frameworks.  
 The project focuses on clean architecture (MVC), performance, and understanding how real platforms work internally.
@@ -33,6 +36,7 @@ The project focuses on clean architecture (MVC), performance, and understanding 
 - Vanilla JavaScript
 - PHPMailer
 - vlucas/phpdotenv
+- Docker + Docker Compose
 
 ---
 
@@ -192,7 +196,7 @@ YOUR_LOCAL_IP tubeyou.local
 
 ### 🌍 Deployment
 - [x] Production deployment guide
-- [ ] Docker setup
+- [x] Docker setup
 - [ ] CI/CD pipeline
 
 ---
