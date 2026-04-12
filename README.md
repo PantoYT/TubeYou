@@ -5,7 +5,7 @@ A YouTube-inspired video platform built with PHP (MVC), MariaDB, and vanilla JS.
 ---
 
 ## 🌐 Live Demo
-[tubeyou-spvl.onrender.com](https://tubeyou-spvl.onrender.com)
+[TubeYou](https://tubeyou-spvl.onrender.com)
 
 ## 🚀 Overview
 TubeYou is a full-stack web application replicating core YouTube features, built from scratch without frameworks.  
