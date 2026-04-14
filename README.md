@@ -70,7 +70,7 @@ cp .env.example .env
 Fill in credentials, then:
 
 ```
-php database/reset.php
+php database/database.php
 ```
 
 ---
