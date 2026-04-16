@@ -16,7 +16,7 @@ class MailService
     private function send(string $to, string $toName, string $subject, string $html): void
     {
         $payload = json_encode([
-            'from'    => $this->fromName . ' <onboarding@resend.dev>',
+            'from' => $this->fromName . ' <' . $this->from . '>',
             'to'      => [$to],
             'subject' => $subject,
             'html'    => $html,

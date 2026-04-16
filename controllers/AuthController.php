@@ -95,9 +95,7 @@ class AuthController
             return;
         }
 
-render('auth/register-success', ['email' => $email]);
-
-        render('auth/register-success', ['email' => $email]);
+    render('auth/register-success', ['email' => $email]);
     }
 
     public function verify()
