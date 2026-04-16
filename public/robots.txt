@@ -1,0 +1,14 @@
+User-agent: *
+Disallow: /config/
+Disallow: /controllers/
+Disallow: /models/
+Disallow: /database/
+Disallow: /helpers/
+Disallow: /services/
+Disallow: /storage/
+Disallow: /vendor/
+Disallow: /scripts/
+
+Allow: /public/
+
+Sitemap: https://tubeyou.panto-dev.com/sitemap.xml
