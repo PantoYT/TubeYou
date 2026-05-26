@@ -11,6 +11,7 @@ require_once __DIR__ . '/helpers/formatNumber.php';
 require_once __DIR__ . '/helpers/sanitize.php';
 require_once __DIR__ . '/helpers/RateLimiter.php';
 require_once __DIR__ . '/helpers/auth.php';
+require_once __DIR__ . '/helpers/cache.php';
 require_once __DIR__ . '/views/partials/avatar.php';
 require_once __DIR__ . '/views/partials/pagination.php';
 

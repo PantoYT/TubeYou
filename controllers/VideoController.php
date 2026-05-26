@@ -45,9 +45,18 @@ class VideoController
     {
         $page    = max(1, (int)($_GET['page'] ?? 1));
         $perPage = 12;
-        $videos  = $this->videoRepo->findAllPaginated($page, $perPage);
-        $total   = $this->videoRepo->countAll();
-        $pages   = (int)ceil($total / $perPage);
+
+        $cacheKey = "homepage_p{$page}";
+        $cached   = cacheGet($cacheKey);
+
+        if ($cached !== null) {
+            ['videos' => $videos, 'pages' => $pages] = $cached;
+        } else {
+            $videos = $this->videoRepo->findAllPaginated($page, $perPage);
+            $total  = $this->videoRepo->countAll();
+            $pages  = (int)ceil($total / $perPage);
+            cacheSet($cacheKey, compact('videos', 'pages'), 60);
+        }
 
         render('main/homepage', [
             'videos' => $videos,
@@ -103,7 +112,12 @@ class VideoController
         );
         $commentCount = $this->commentRepo->count((int)$id);
         $commentPages = (int)ceil($commentCount / $commentPerPage);
-        $suggested    = $this->videoRepo->findSuggested((int)$id, $userId ?? 0);
+        $suggestKey = "suggested_{$id}";
+        $suggested  = cacheGet($suggestKey) ?? (function () use ($id, $userId, $suggestKey) {
+            $result = $this->videoRepo->findSuggested((int)$id, $userId ?? 0);
+            cacheSet($suggestKey, $result, 300);
+            return $result;
+        })();
 
         render('main/watch', [
             'video'         => $video,
@@ -262,6 +276,8 @@ class VideoController
         if ($tags) {
             $this->tagRepo->syncTags($videoId, $tags);
         }
+
+        cacheClear('homepage_p1');
 
         header('Location: /');
         exit;

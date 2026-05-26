@@ -185,7 +185,7 @@ YOUR_LOCAL_IP tubeyou.local
 - [ ] Community posts
 
 ### ⚡ Performance
-- [ ] Caching layer (Redis or file-based)
+- [x] File-based query cache (homepage feed 60s, suggested videos 5min)
 - [ ] Lazy loading improvements
 - [x] N+1 query fix in Studio (single JOIN replaces per-video queries)
 
@@ -200,6 +200,8 @@ YOUR_LOCAL_IP tubeyou.local
 - [x] Shared auth middleware (no more duplicated requireAuth)
 - [x] Remove unused phpmailer dependency
 - [x] Directory listing disabled on uploads (Options -Indexes)
+- [x] Session fixation fix (session_regenerate_id on login)
+- [x] Referrer-Policy security header
 
 ### 🌍 Deployment
 - [x] Production deployment guide (Render + Railway)
