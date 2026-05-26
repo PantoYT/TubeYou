@@ -3,47 +3,24 @@
 class StudioController
 {
     private VideoRepository $videoRepo;
-    private LikeRepository  $likeRepo;
-    private CommentRepository $commentRepo;
     private SubRepository   $subRepo;
     private TagRepository   $tagRepo;
 
     public function __construct(
-        VideoRepository   $videoRepo,
-        LikeRepository    $likeRepo,
-        CommentRepository $commentRepo,
-        SubRepository     $subRepo,
-        TagRepository     $tagRepo
+        VideoRepository $videoRepo,
+        SubRepository   $subRepo,
+        TagRepository   $tagRepo
     ) {
-        $this->videoRepo   = $videoRepo;
-        $this->likeRepo    = $likeRepo;
-        $this->commentRepo = $commentRepo;
-        $this->subRepo     = $subRepo;
-        $this->tagRepo     = $tagRepo;
-    }
-
-    private function requireAuth(): void
-    {
-        if (!isset($_SESSION['user']['id'])) {
-            header('Location: /login');
-            exit;
-        }
+        $this->videoRepo = $videoRepo;
+        $this->subRepo   = $subRepo;
+        $this->tagRepo   = $tagRepo;
     }
 
     public function index()
     {
-        $this->requireAuth();
+        requireAuth();
         $userId = $_SESSION['user']['id'];
-        $videos = $this->videoRepo->findByUserId($userId);
-
-        // Attach stats to each video
-        foreach ($videos as &$v) {
-            $v['likeCount']    = $this->likeRepo->countLikes((int)$v['id']);
-            $v['dislikeCount'] = $this->likeRepo->countDislikes((int)$v['id']);
-            $v['commentCount'] = $this->commentRepo->count((int)$v['id']);
-            $v['tags']         = implode(', ', $this->tagRepo->getForVideo((int)$v['id']));
-        }
-        unset($v);
+        $videos = $this->videoRepo->findByUserIdWithStats($userId);
 
         $totalViews    = array_sum(array_column($videos, 'views'));
         $totalLikes    = array_sum(array_column($videos, 'likeCount'));
@@ -62,7 +39,7 @@ class StudioController
     public function quickEdit()
     {
         csrfVerify();
-        $this->requireAuth();
+        requireAuth();
 
         $userId      = $_SESSION['user']['id'];
         $videoId     = (int)($_POST['videoId'] ?? 0);

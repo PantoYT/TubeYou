@@ -25,7 +25,7 @@ return [
         '/playlists'  => ['controller' => 'PlaylistController', 'action' => 'index'],
         '/playlist'   => ['controller' => 'PlaylistController', 'action' => 'show'],
         '/studio'     => ['controller' => 'StudioController', 'action' => 'index'],
-        '/notifications/count', ['controler' => 'NotificationController', 'action' => 'count'],
+        '/notifications/count' => ['controller' => 'NotificationController', 'action' => 'count'],
     ],
     'POST' => [
         '/login' => ['controller' => 'AuthController', 'action' => 'login'],

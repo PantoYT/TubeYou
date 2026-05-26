@@ -1,8 +1,21 @@
 <?php
-ini_set('display_errors', 1);
+$isDev = ($_ENV['APP_ENV'] ?? 'production') === 'development';
+ini_set('display_errors', $isDev ? '1' : '0');
 error_reporting(E_ALL);
 
 require_once __DIR__ . '/../bootstrap.php';
+
+set_exception_handler(function (Throwable $e) {
+    error_log('[exception] ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+    http_response_code(500);
+    render('errors/500');
+    exit;
+});
+
+set_error_handler(function (int $errno, string $errstr, string $errfile, int $errline): bool {
+    if (!(error_reporting() & $errno)) return false;
+    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+});
 
 function render($view, $data = []) {
     $GLOBALS['_view_data'] = $data;

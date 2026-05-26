@@ -11,18 +11,10 @@ class CommentController
         $this->notifRepo = $notifRepo;
     }
 
-    private function requireAuth(): void
-    {
-        if (!isset($_SESSION['user']['id'])) {
-            http_response_code(403);
-            exit;
-        }
-    }
-
     public function store()
     {
         csrfVerify();
-        $this->requireAuth();
+        requireAuthJson();
 
         $userId   = $_SESSION['user']['id'];
         $videoId  = (int)($_POST['videoId'] ?? 0);
@@ -45,7 +37,7 @@ class CommentController
     public function delete()
     {
         csrfVerify();
-        $this->requireAuth();
+        requireAuthJson();
 
         $userId    = $_SESSION['user']['id'];
         $commentId = (int)($_POST['commentId'] ?? 0);
@@ -60,7 +52,7 @@ class CommentController
     public function pin()
     {
         csrfVerify();
-        $this->requireAuth();
+        requireAuthJson();
 
         $userId    = $_SESSION['user']['id'];
         $commentId = (int)($_POST['commentId'] ?? 0);
@@ -75,7 +67,7 @@ class CommentController
     public function like()
     {
         csrfVerify();
-        $this->requireAuth();
+        requireAuthJson();
 
         $userId    = $_SESSION['user']['id'];
         $commentId = (int)($_POST['commentId'] ?? 0);
@@ -98,7 +90,7 @@ class CommentController
     public function edit()
     {
         csrfVerify();
-        $this->requireAuth();
+        requireAuthJson();
 
         $userId    = $_SESSION['user']['id'];
         $commentId = (int)($_POST['commentId'] ?? 0);

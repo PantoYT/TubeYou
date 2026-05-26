@@ -52,7 +52,6 @@ class AuthController
     {
         csrfVerify();
         $limiter = new RateLimiter();
-        $limiter = new RateLimiter();
         if (!$limiter->check('register_' . $limiter->ip(), 5, 3600)) {
             render('auth/register', ['errors' => ['Too many registrations from this IP.']]);
             return;

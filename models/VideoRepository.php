@@ -44,6 +44,28 @@ class VideoRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function findByUserIdWithStats(int $userId): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT v.*, u.displayName as creatorName, u.avatar as creatorAvatar,
+                    COUNT(DISTINCT CASE WHEN l.type = 1 THEN l.id END)  as likeCount,
+                    COUNT(DISTINCT CASE WHEN l.type = -1 THEN l.id END) as dislikeCount,
+                    COUNT(DISTINCT c.id) as commentCount,
+                    GROUP_CONCAT(DISTINCT t.name ORDER BY t.name SEPARATOR ', ') as tags
+             FROM videos v
+             LEFT JOIN users u ON v.userId = u.id
+             LEFT JOIN likes l ON l.videoId = v.id
+             LEFT JOIN comments c ON c.videoId = v.id AND c.parentId IS NULL
+             LEFT JOIN videoTags vt ON vt.videoId = v.id
+             LEFT JOIN tags t ON t.id = vt.tagId
+             WHERE v.userId = ?
+             GROUP BY v.id
+             ORDER BY v.createdAt DESC"
+        );
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function save(int $userId, string $title, string $description, string $src, string $thumbnail, int $duration = 0, int $isShort = 0): void
     {
         $stmt = $this->db->prepare(

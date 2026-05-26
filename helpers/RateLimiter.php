@@ -31,6 +31,14 @@ class RateLimiter
 
     public function ip(): string
     {
-        return $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $addr = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        // Only trust X-Forwarded-For when explicitly behind a known proxy
+        if (($addr === '127.0.0.1' || $addr === '::1') && isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $forwarded = trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]);
+            if (filter_var($forwarded, FILTER_VALIDATE_IP)) {
+                return $forwarded;
+            }
+        }
+        return $addr;
     }
 }

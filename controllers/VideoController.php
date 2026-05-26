@@ -143,21 +143,14 @@ class VideoController
 
     public function uploadForm()
     {
-        if (!isset($_SESSION['user']['id'])) {
-            header('Location: /login');
-            exit;
-        }
+        requireAuth();
         render('main/upload');
     }
 
     public function upload()
     {
         csrfVerify();
-
-        if (!isset($_SESSION['user']['id'])) {
-            header('Location: /login');
-            exit;
-        }
+        requireAuth();
 
         $userId      = $_SESSION['user']['id'];
         $title       = sanitizeTitle($_POST['title'] ?? '');
@@ -175,6 +168,24 @@ class VideoController
         }
         if (!$thumbnailFile || $thumbnailFile['error'] !== UPLOAD_ERR_OK) {
             $errors[] = 'Thumbnail is required';
+        }
+
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+
+        if ($videoFile && $videoFile['error'] === UPLOAD_ERR_OK) {
+            $allowedVideo = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo'];
+            $realMime     = $finfo->file($videoFile['tmp_name']);
+            if (!in_array($realMime, $allowedVideo)) {
+                $errors[] = 'Invalid video file type';
+            }
+        }
+
+        if ($thumbnailFile && $thumbnailFile['error'] === UPLOAD_ERR_OK) {
+            $allowedImage = ['image/jpeg', 'image/png', 'image/webp'];
+            $realMime     = $finfo->file($thumbnailFile['tmp_name']);
+            if (!in_array($realMime, $allowedImage)) {
+                $errors[] = 'Invalid thumbnail file type';
+            }
         }
 
         if ($errors) {
@@ -266,11 +277,7 @@ class VideoController
     public function delete()
     {
         csrfVerify();
-
-        if (!isset($_SESSION['user']['id'])) {
-            http_response_code(403);
-            exit;
-        }
+        requireAuthJson();
 
         $userId  = $_SESSION['user']['id'];
         $videoId = (int)($_POST['videoId'] ?? 0);
@@ -310,10 +317,7 @@ class VideoController
 
     public function editForm()
     {
-        if (!isset($_SESSION['user']['id'])) {
-            header('Location: /login');
-            exit;
-        }
+        requireAuth();
 
         $videoId = (int)($_GET['id'] ?? 0);
         $video   = $this->videoRepo->findById($videoId);
@@ -335,11 +339,7 @@ class VideoController
     public function edit()
     {
         csrfVerify();
-
-        if (!isset($_SESSION['user']['id'])) {
-            header('Location: /login');
-            exit;
-        }
+        requireAuth();
 
         $userId      = $_SESSION['user']['id'];
         $videoId     = (int)($_POST['videoId'] ?? 0);

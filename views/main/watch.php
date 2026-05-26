@@ -280,6 +280,11 @@
 </div>
 
 <script>
+function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+              .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
 const csrf        = document.querySelector('meta[name="csrf"]').content;
 const originalSrc = <?= json_encode($video['src']) ?>;
 const videoDir    = <?= json_encode(dirname($video['src']) . '/') ?>;
@@ -423,7 +428,7 @@ document.addEventListener('click', async e => {
     const commentEl = document.getElementById('comment-' + id);
     const contentEl = commentEl.querySelector('.comment-content');
     const oldText   = contentEl.innerHTML;
-    contentEl.innerHTML = content.replace(/\n/g, '<br>');
+    contentEl.innerHTML = escapeHtml(content).replace(/\n/g, '<br>');
     document.getElementById('edit-' + id).style.display = 'none';
 
     const res = await fetch('/comment/edit', {
@@ -580,10 +585,10 @@ document.getElementById('main-comment-form')?.addEventListener('submit', async f
         ${avatar}
         <div class="comment-body">
             <div class="comment-header">
-                <span class="comment-author">${name}</span>
+                <span class="comment-author">${escapeHtml(name)}</span>
                 <span class="comment-time">${now}</span>
             </div>
-            <p class="comment-content">${content.replace(/\n/g, '<br>')}</p>
+            <p class="comment-content">${escapeHtml(content).replace(/\n/g, '<br>')}</p>
             <div class="comment-footer"></div>
         </div>
     `;
@@ -637,10 +642,10 @@ document.addEventListener('submit', async function(e) {
         ${avatar}
         <div class="comment-body">
             <div class="comment-header">
-                <span class="comment-author">${name}</span>
+                <span class="comment-author">${escapeHtml(name)}</span>
                 <span class="comment-time">${now}</span>
             </div>
-            <p class="comment-content">${content.replace(/\n/g, '<br>')}</p>
+            <p class="comment-content">${escapeHtml(content).replace(/\n/g, '<br>')}</p>
             <div class="comment-footer"></div>
         </div>
     `;
