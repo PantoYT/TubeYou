@@ -187,16 +187,22 @@ YOUR_LOCAL_IP tubeyou.local
 ### ⚡ Performance
 - [ ] Caching layer (Redis or file-based)
 - [ ] Lazy loading improvements
-- [ ] Query optimization
+- [x] N+1 query fix in Studio (single JOIN replaces per-video queries)
 
 ### 🔐 Security
-- [x] Rate limiting
-- [x] CSRF improvements
-- [x] Input sanitization audit
+- [x] Rate limiting (file-based, per IP)
+- [x] CSRF protection on all POST endpoints
+- [x] Input sanitization (strip_tags + prepared statements)
+- [x] XSS fix — HTML escaping in JS optimistic comment rendering
+- [x] MIME validation via finfo (avatar, banner, video upload)
+- [x] X-Forwarded-For spoofing protection in RateLimiter
+- [x] Global exception handler (500 page + error_log)
+- [x] Shared auth middleware (no more duplicated requireAuth)
 
 ### 🌍 Deployment
-- [x] Production deployment guide
+- [x] Production deployment guide (Render + Railway)
 - [x] Docker setup
+- [x] LAN hosting guide (Windows + XAMPP, docs/instrukcje.md)
 - [ ] CI/CD pipeline
 
 ---
