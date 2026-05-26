@@ -9,17 +9,9 @@ class PlaylistController
         $this->playlistRepo = $playlistRepo;
     }
 
-    private function requireAuth(): void
-    {
-        if (!isset($_SESSION['user']['id'])) {
-            header('Location: /login');
-            exit;
-        }
-    }
-
     public function index()
     {
-        $this->requireAuth();
+        requireAuth();
         $playlists = $this->playlistRepo->getForUser($_SESSION['user']['id']);
         render('main/playlists', ['playlists' => $playlists]);
     }
@@ -49,7 +41,7 @@ class PlaylistController
     public function create()
     {
         csrfVerify();
-        $this->requireAuth();
+        requireAuth();
 
         $title       = sanitizeTitle($_POST['title'] ?? '');
         $description = sanitizeText($_POST['description'] ?? '', 1000);
@@ -68,7 +60,7 @@ class PlaylistController
     public function addVideo()
     {
         csrfVerify();
-        $this->requireAuth();
+        requireAuth();
 
         $playlistId = (int)($_POST['playlistId'] ?? 0);
         $videoId    = (int)($_POST['videoId']    ?? 0);
@@ -83,7 +75,7 @@ class PlaylistController
     public function removeVideo()
     {
         csrfVerify();
-        $this->requireAuth();
+        requireAuth();
 
         $playlistId = (int)($_POST['playlistId'] ?? 0);
         $videoId    = (int)($_POST['videoId']    ?? 0);
@@ -100,7 +92,7 @@ class PlaylistController
     public function delete()
     {
         csrfVerify();
-        $this->requireAuth();
+        requireAuth();
 
         $playlistId = (int)($_POST['playlistId'] ?? 0);
         $this->playlistRepo->delete($playlistId, $_SESSION['user']['id']);

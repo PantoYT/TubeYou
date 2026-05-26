@@ -174,7 +174,7 @@ YOUR_LOCAL_IP tubeyou.local
 - [x] Notifications system
 
 ### 👤 User Features
-- [ ] Playlists
+- [x] Playlists
 - [x] Watch later
 - [x] Channel customization
 - [x] User settings panel
@@ -198,6 +198,8 @@ YOUR_LOCAL_IP tubeyou.local
 - [x] X-Forwarded-For spoofing protection in RateLimiter
 - [x] Global exception handler (500 page + error_log)
 - [x] Shared auth middleware (no more duplicated requireAuth)
+- [x] Remove unused phpmailer dependency
+- [x] Directory listing disabled on uploads (Options -Indexes)
 
 ### 🌍 Deployment
 - [x] Production deployment guide (Render + Railway)
