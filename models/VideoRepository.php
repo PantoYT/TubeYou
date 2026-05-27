@@ -48,18 +48,15 @@ class VideoRepository
     {
         $stmt = $this->db->prepare(
             "SELECT v.*, u.displayName as creatorName, u.avatar as creatorAvatar,
-                    COUNT(DISTINCT CASE WHEN l.type = 1 THEN l.id END)  as likeCount,
-                    COUNT(DISTINCT CASE WHEN l.type = -1 THEN l.id END) as dislikeCount,
-                    COUNT(DISTINCT c.id) as commentCount,
-                    GROUP_CONCAT(DISTINCT t.name ORDER BY t.name SEPARATOR ', ') as tags
+                    (SELECT COUNT(*) FROM likes WHERE videoId = v.id AND type = 1)  as likeCount,
+                    (SELECT COUNT(*) FROM likes WHERE videoId = v.id AND type = -1) as dislikeCount,
+                    (SELECT COUNT(*) FROM comments WHERE videoId = v.id AND parentId IS NULL) as commentCount,
+                    (SELECT GROUP_CONCAT(t.name ORDER BY t.name SEPARATOR ', ')
+                     FROM tags t JOIN videoTags vt ON vt.tagId = t.id
+                     WHERE vt.videoId = v.id) as tags
              FROM videos v
              LEFT JOIN users u ON v.userId = u.id
-             LEFT JOIN likes l ON l.videoId = v.id
-             LEFT JOIN comments c ON c.videoId = v.id AND c.parentId IS NULL
-             LEFT JOIN videoTags vt ON vt.videoId = v.id
-             LEFT JOIN tags t ON t.id = vt.tagId
              WHERE v.userId = ?
-             GROUP BY v.id
              ORDER BY v.createdAt DESC"
         );
         $stmt->execute([$userId]);
