@@ -7,6 +7,7 @@ require_once __DIR__ . '/../bootstrap.php';
 
 set_exception_handler(function (Throwable $e) {
     error_log('[exception] ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+    while (ob_get_level() > 0) ob_end_clean();
     http_response_code(500);
     render('errors/500');
     exit;
@@ -14,6 +15,7 @@ set_exception_handler(function (Throwable $e) {
 
 set_error_handler(function (int $errno, string $errstr, string $errfile, int $errline): bool {
     if (!(error_reporting() & $errno)) return false;
+    if ($errno & (E_DEPRECATED | E_USER_DEPRECATED | E_NOTICE | E_USER_NOTICE)) return false;
     throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
 });
 

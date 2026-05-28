@@ -51,9 +51,9 @@ class VideoRepository
                     (SELECT COUNT(*) FROM likes WHERE videoId = v.id AND type = 1)  as likeCount,
                     (SELECT COUNT(*) FROM likes WHERE videoId = v.id AND type = -1) as dislikeCount,
                     (SELECT COUNT(*) FROM comments WHERE videoId = v.id AND parentId IS NULL) as commentCount,
-                    (SELECT GROUP_CONCAT(t.name ORDER BY t.name SEPARATOR ', ')
+                    COALESCE((SELECT GROUP_CONCAT(t.name ORDER BY t.name SEPARATOR ', ')
                      FROM tags t JOIN videoTags vt ON vt.tagId = t.id
-                     WHERE vt.videoId = v.id) as tags
+                     WHERE vt.videoId = v.id), '') as tags
              FROM videos v
              LEFT JOIN users u ON v.userId = u.id
              WHERE v.userId = ?
