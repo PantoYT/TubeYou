@@ -1,0 +1,9 @@
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+.claude
+deploy/*.tar
+storage/cache/*
+storage/rate_limits/*

@@ -1,0 +1,7 @@
+disable:
+  - traefik
+  - servicelb
+disable-network-policy: true
+node-ip: 192.168.33.200
+flannel-iface: bond0
+write-kubeconfig-mode: "0600"

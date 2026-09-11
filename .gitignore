@@ -21,6 +21,3 @@
 
 # Storage
 /storage/
-
-# Docker
-.dockerignore

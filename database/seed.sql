@@ -5,7 +5,7 @@ use tubeyou;
 -- =========================
 insert into users (email, displayName, password, avatar, banner, bio, emailVerified)
 values (
-'panto@tubeyou.com','Panto',
+'panto@panto-dev.com','Panto',
 '$2y$10$cfM2MzNC3QW0calwvXy8tOiD03glK9KpKdVCcFTtYfQIjUtm335h2',
 '/uploads/avatars/1/avatar.png',
 '/uploads/banners/1/banner.png',
@@ -14,29 +14,17 @@ values (
 );
 
 -- =========================
--- RANDOM USER COUNT (80–140)
+-- DEMO USERS (deterministic and unique)
 -- =========================
-set @userCount = floor(80 + rand()*60);
+set @userCount = 100;
 
 -- =========================
 -- GENERATOR NICKÓW
 -- =========================
 insert into users (email, displayName, password, emailVerified)
 select
-    concat(
-        lower(
-            substring('Shadow Blaze Nova Frost Echo Vortex Pixel Ghost Alpha Neon Drift Rogue Zenith Orbit Pulse Flare Byte Storm', 
-            1 + floor(rand()*120), 
-            6)
-        ),
-        floor(rand()*999)
-    ),
-    concat(
-        substring('Shadow Blaze Nova Frost Echo Vortex Pixel Ghost Alpha Neon Drift Rogue Zenith Orbit Pulse Flare Byte Storm', 
-        1 + floor(rand()*120), 
-        6),
-        floor(rand()*999)
-    ),
+    concat('viewer', lpad(n, 3, '0'), '@example.invalid'),
+    concat('Viewer', lpad(n, 3, '0')),
     '$2y$10$cfM2MzNC3QW0calwvXy8tOiD03glK9KpKdVCcFTtYfQIjUtm335h2',
     1
 from (
@@ -51,21 +39,21 @@ where n <= @userCount;
 -- FILMY (PANTO ONLY) - 360p as default src
 -- =========================
 insert into videos (title, src, userId, thumbnail, description, duration, views)
-select 'I like the way you kiss me','/uploads/videos/1/69ce646e471917.68634994_360p.mp4',id,'/uploads/thumbnails/1/69ce646e471917.68634994.jpg','Valorant montage',70, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
+select 'I like the way you kiss me','/uploads/videos/1/69ce646e471917.68634994_360p.mp4',id,'/uploads/thumbnails/1/69ce646e471917.68634994.jpg','Valorant montage',70, floor(200 + rand()*2000) from users where email='panto@panto-dev.com'
 union all
-select 'Bombs Away','/uploads/videos/1/69cf1564e75d5_360p.mp4',id,'/uploads/thumbnails/1/69cf1564e9b65.jpg','Valorant montage',76, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
+select 'Bombs Away','/uploads/videos/1/69cf1564e75d5_360p.mp4',id,'/uploads/thumbnails/1/69cf1564e9b65.jpg','Valorant montage',76, floor(200 + rand()*2000) from users where email='panto@panto-dev.com'
 union all
-select 'Bones','/uploads/videos/1/69cf159cc35b5_360p.mp4',id,'/uploads/thumbnails/1/69cf159cc35b8.jpg','Valorant montage',107, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
+select 'Bones','/uploads/videos/1/69cf159cc35b5_360p.mp4',id,'/uploads/thumbnails/1/69cf159cc35b8.jpg','Valorant montage',107, floor(200 + rand()*2000) from users where email='panto@panto-dev.com'
 union all
-select 'Cupid','/uploads/videos/1/69cf15bbcf7f3_360p.mp4',id,'/uploads/thumbnails/1/69cf15bbcf7f5.jpg','Valorant montage',146, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
+select 'Cupid','/uploads/videos/1/69cf15bbcf7f3_360p.mp4',id,'/uploads/thumbnails/1/69cf15bbcf7f5.jpg','Valorant montage',146, floor(200 + rand()*2000) from users where email='panto@panto-dev.com'
 union all
-select 'Hills','/uploads/videos/1/69cf15f125ba3_360p.mp4',id,'/uploads/thumbnails/1/69cf15f125ba6.jpg','Valorant montage',73, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
+select 'Hills','/uploads/videos/1/69cf15f125ba3_360p.mp4',id,'/uploads/thumbnails/1/69cf15f125ba6.jpg','Valorant montage',73, floor(200 + rand()*2000) from users where email='panto@panto-dev.com'
 union all
-select 'I Aint Worried','/uploads/videos/1/69cf1604d17b4_360p.mp4',id,'/uploads/thumbnails/1/69cf1604d17b6.jpg','Valorant montage',110, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
+select 'I Aint Worried','/uploads/videos/1/69cf1604d17b4_360p.mp4',id,'/uploads/thumbnails/1/69cf1604d17b6.jpg','Valorant montage',110, floor(200 + rand()*2000) from users where email='panto@panto-dev.com'
 union all
-select 'No Lie','/uploads/videos/1/69cf164c2abcd_360p.mp4',id,'/uploads/thumbnails/1/69cf164c2abcf.jpg','Valorant montage',58, floor(200 + rand()*2000) from users where email='panto@tubeyou.com'
+select 'No Lie','/uploads/videos/1/69cf164c2abcd_360p.mp4',id,'/uploads/thumbnails/1/69cf164c2abcf.jpg','Valorant montage',58, floor(200 + rand()*2000) from users where email='panto@panto-dev.com'
 union all
-select 'Sunroof','/uploads/videos/1/69cf1660d60b8_360p.mp4',id,'/uploads/thumbnails/1/69cf1660d60ba.jpg','Valorant montage',90, floor(200 + rand()*2000) from users where email='panto@tubeyou.com';
+select 'Sunroof','/uploads/videos/1/69cf1660d60b8_360p.mp4',id,'/uploads/thumbnails/1/69cf1660d60ba.jpg','Valorant montage',90, floor(200 + rand()*2000) from users where email='panto@panto-dev.com';
 
 -- =========================
 -- SUBY (wszyscy -> Panto)
@@ -73,8 +61,8 @@ select 'Sunroof','/uploads/videos/1/69cf1660d60b8_360p.mp4',id,'/uploads/thumbna
 insert into subscribes (subscriberId, subscribedToId)
 select u.id, p.id
 from users u
-join users p on p.email='panto@tubeyou.com'
-where u.email != 'panto@tubeyou.com';
+join users p on p.email='panto@panto-dev.com'
+where u.email != 'panto@panto-dev.com';
 
 -- =========================
 -- LAJKI (random density)
@@ -83,7 +71,7 @@ insert into likes (userId, videoId, type)
 select u.id, v.id, if(rand()>0.15,1,-1)
 from users u
 join videos v
-where u.email != 'panto@tubeyou.com'
+where u.email != 'panto@panto-dev.com'
 and rand() > 0.55;
 
 -- =========================
@@ -99,7 +87,7 @@ select u.id, v.id,
        substring_index(substring_index(@comments, '|', floor(1 + rand()*30)), '|', -1)
 from users u
 join videos v
-where u.email != 'panto@tubeyou.com'
+where u.email != 'panto@panto-dev.com'
 and rand() > 0.8;
 
 -- =========================
@@ -119,7 +107,7 @@ select id,
        concat('playlist_', floor(rand()*999)),
        'auto generated'
 from users
-where email != 'panto@tubeyou.com'
+where email != 'panto@panto-dev.com'
 and rand() > 0.7;
 
 -- =========================
@@ -138,7 +126,7 @@ insert into history (userId, videoId)
 select u.id, v.id
 from users u
 join videos v
-where u.email != 'panto@tubeyou.com'
+where u.email != 'panto@panto-dev.com'
 and rand() > 0.4;
 
 -- =========================
@@ -158,7 +146,7 @@ select p.id, u.id,
        if(rand()>0.5,'like','sub'),
        v.id
 from users u
-join users p on p.email='panto@tubeyou.com'
+join users p on p.email='panto@panto-dev.com'
 join videos v
-where u.email != 'panto@tubeyou.com'
+where u.email != 'panto@panto-dev.com'
 and rand() > 0.75;

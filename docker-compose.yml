@@ -10,11 +10,29 @@ services:
       DB_PASSWORD: secret
       FFMPEG_PATH: ffmpeg
       FFPROBE_PATH: ffprobe
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      APP_URL: http://localhost:8080
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      MAIL_USERNAME: ${MAIL_USERNAME:-no-reply@mail.panto-dev.com}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-TubeYou}
+      MAIL_REPLY_TO: ${MAIL_REPLY_TO:-panto@panto-dev.com}
     volumes:
       - .:/var/www/html
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   db:
     image: mysql:8.0

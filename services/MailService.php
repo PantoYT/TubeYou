@@ -5,21 +5,28 @@ class MailService
     private string $apiKey;
     private string $from;
     private string $fromName;
+    private string $replyTo;
 
     public function __construct()
     {
-        $this->apiKey   = $_ENV['RESEND_API_KEY']  ?? getenv('RESEND_API_KEY');
-        $this->from     = $_ENV['MAIL_USERNAME']   ?? getenv('MAIL_USERNAME');
-        $this->fromName = $_ENV['MAIL_FROM_NAME']  ?? getenv('MAIL_FROM_NAME');
+        $this->apiKey   = (string) ($_ENV['RESEND_API_KEY'] ?? getenv('RESEND_API_KEY') ?: '');
+        $this->from     = (string) ($_ENV['MAIL_USERNAME'] ?? getenv('MAIL_USERNAME') ?: '');
+        $this->fromName = (string) ($_ENV['MAIL_FROM_NAME'] ?? getenv('MAIL_FROM_NAME') ?: 'TubeYou');
+        $this->replyTo  = (string) ($_ENV['MAIL_REPLY_TO'] ?? getenv('MAIL_REPLY_TO') ?: $this->from);
     }
 
     private function send(string $to, string $toName, string $subject, string $html): void
     {
+        if ($this->apiKey === '' || $this->from === '') {
+            throw new RuntimeException('Resend is not configured');
+        }
+
         $payload = json_encode([
             'from' => $this->fromName . ' <' . $this->from . '>',
             'to'      => [$to],
             'subject' => $subject,
             'html'    => $html,
+            'reply_to' => $this->replyTo,
         ]);
 
         $ch = curl_init('https://api.resend.com/emails');
@@ -31,11 +38,18 @@ class MailService
                 'Authorization: Bearer ' . $this->apiKey,
                 'Content-Type: application/json',
             ],
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT        => 15,
         ]);
 
         $response = curl_exec($ch);
         $status   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
         curl_close($ch);
+
+        if ($response === false) {
+            throw new Exception('Resend connection error: ' . $curlError);
+        }
 
         if ($status !== 200 && $status !== 201) {
             throw new Exception('Resend error: ' . $response);
@@ -44,8 +58,7 @@ class MailService
 
     public function sendVerification(string $toEmail, string $toName, string $token): void
     {
-        $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-        $link   = $scheme . '://' . $_SERVER['HTTP_HOST'] . '/verify?token=' . $token;
+        $link = $this->baseUrl() . '/verify?token=' . urlencode($token);
 
         $html = "
             <div style='font-family:sans-serif;max-width:480px;margin:0 auto;'>
@@ -63,8 +76,7 @@ class MailService
 
     public function sendPasswordReset(string $toEmail, string $toName, string $token): void
     {
-        $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-        $link   = $scheme . '://' . $_SERVER['HTTP_HOST'] . '/reset?token=' . $token;
+        $link = $this->baseUrl() . '/reset?token=' . urlencode($token);
 
         $html = "
             <div style='font-family:sans-serif;max-width:480px;margin:0 auto;'>
@@ -78,5 +90,15 @@ class MailService
         ";
 
         $this->send($toEmail, $toName, 'Reset your TubeYou password', $html);
+    }
+
+    private function baseUrl(): string
+    {
+        $configured = $_ENV['APP_URL'] ?? getenv('APP_URL') ?: '';
+        if ($configured !== '') return rtrim($configured, '/');
+
+        $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        return $scheme . '://' . $host;
     }
 }

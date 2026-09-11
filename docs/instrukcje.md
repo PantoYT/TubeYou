@@ -137,13 +137,11 @@ DB_NAME=tubeyou
 DB_USER=root
 DB_PASSWORD=
 
-# E-mail (Resend API lub SMTP)
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=twoj@gmail.com
-MAIL_PASSWORD=twoje_haslo_aplikacji
+# E-mail transakcyjny przez Resend
+MAIL_USERNAME=no-reply@mail.panto-dev.com
 MAIL_FROM_NAME=TubeYou
-RESEND_API_KEY=twoj_klucz_resend
+MAIL_REPLY_TO=panto@panto-dev.com
+RESEND_API_KEY=re_xxxxxxxxx
 
 # ffmpeg — pełne ścieżki do plików .exe na dysku systemowym
 FFMPEG_PATH=C:/ffmpeg/bin/ffmpeg.exe
@@ -152,6 +150,10 @@ FFPROBE_PATH=C:/ffmpeg/bin/ffprobe.exe
 
 > Ustaw `APP_ENV=development` tylko gdy debugujesz — wtedy błędy PHP będą widoczne w przeglądarce.  
 > Na `production` błędy trafiają wyłącznie do pliku `storage/logs/apache_error.log`.
+>
+> `panto@panto-dev.com` jest aliasem Cloudflare Email Routing przekazywanym na
+> prywatną skrzynkę. Resend wysyła z osobnej, zweryfikowanej domeny
+> `mail.panto-dev.com`; nie twórz dla `no-reply` skrzynki odbiorczej.
 
 ---
 

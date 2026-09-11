@@ -15,6 +15,17 @@ require_once __DIR__ . '/helpers/cache.php';
 require_once __DIR__ . '/views/partials/avatar.php';
 require_once __DIR__ . '/views/partials/pagination.php';
 
+$redisHost = $_ENV['REDIS_HOST'] ?? getenv('REDIS_HOST') ?: '';
+$redisPort = (int)($_ENV['REDIS_PORT'] ?? getenv('REDIS_PORT') ?: 6379);
+if ($redisHost !== '' && redisClient() !== null) {
+    ini_set('session.save_handler', 'redis');
+    ini_set(
+        'session.save_path',
+        "tcp://{$redisHost}:{$redisPort}?timeout=1&read_timeout=1&prefix=tubeyou:session:"
+    );
+    ini_set('redis.session.locking_enabled', '1');
+}
+
 session_start();
 
 $db           = Database::getInstance();
