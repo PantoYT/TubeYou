@@ -62,8 +62,14 @@ Po przygotowaniu nowego obrazu `tubeyou:local` i zapisaniu go jako
 sudo bash /home/ubuntu/tubeyou-k3s/deploy/finish-server-update.sh
 ```
 
-Skrypt poprosi o klucz Resend, zaimportuje obraz do containerd K3s, zastosuje
-manifest, poczeka na rollout i usunie tymczasowe archiwum obrazu.
+Jeżeli sekret jeszcze nie istnieje, skrypt poprosi o klucz Resend. Następnie
+zaimportuje obraz do containerd K3s, zastosuje manifest, poczeka na rollout i
+usunie tymczasowe archiwum obrazu. Gdy `tubeyou-mail` już istnieje, klucz nie
+jest ponownie wymagany. Wymuszenie jego rotacji przy wdrożeniu:
+
+```bash
+sudo TUBEYOU_REFRESH_MAIL_KEY=1 bash /home/ubuntu/tubeyou-k3s/deploy/finish-server-update.sh
+```
 
 Test z hosta:
 

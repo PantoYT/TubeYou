@@ -18,8 +18,13 @@ cd "${project_dir}"
 
 bash deploy/install-firewall.sh
 
-TUBEYOU_NAMESPACE="${namespace}" TUBEYOU_SKIP_RESTART=1 \
-  bash deploy/set-resend-key.sh
+if [[ "${TUBEYOU_REFRESH_MAIL_KEY:-0}" == "1" ]] || \
+   ! k3s kubectl -n "${namespace}" get secret tubeyou-mail >/dev/null 2>&1; then
+  TUBEYOU_NAMESPACE="${namespace}" TUBEYOU_SKIP_RESTART=1 \
+    bash deploy/set-resend-key.sh
+else
+  echo "Istniejący sekret tubeyou-mail zostaje bez zmian."
+fi
 
 k3s ctr images import "${image_tar}"
 k3s kubectl apply -f deploy/k8s.yaml
