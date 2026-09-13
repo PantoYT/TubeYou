@@ -1,11 +1,13 @@
 <?php extract($GLOBALS['_view_data'] ?? []); ?>
 <div class="video-grid">
-    <?php foreach (($videos ?? []) as $video): ?>
+    <?php foreach (($videos ?? []) as $index => $video): ?>
         <div class="video-card">
             <a href="/watch?id=<?= $video['id'] ?>" class="video-thumbnail">
                 <img src="<?= htmlspecialchars($video['thumbnail']) ?>"
                      alt="<?= htmlspecialchars($video['title']) ?>"
-                     loading="lazy">
+                     loading="<?= $index < 4 ? 'eager' : 'lazy' ?>"
+                     decoding="async"
+                     <?= $index === 0 ? 'fetchpriority="high"' : '' ?>>
                 <span class="video-duration"><?= gmdate('i:s', $video['duration'] ?? 0) ?></span>
             </a>
             <div class="video-info">

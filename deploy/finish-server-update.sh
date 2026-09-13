@@ -16,6 +16,8 @@ fi
 
 cd "${project_dir}"
 
+bash deploy/install-firewall.sh
+
 TUBEYOU_NAMESPACE="${namespace}" TUBEYOU_SKIP_RESTART=1 \
   bash deploy/set-resend-key.sh
 

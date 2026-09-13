@@ -28,7 +28,10 @@
                     <a href="/watch?id=<?= $video['id'] ?>" style="flex-shrink:0;">
                         <div style="width:100px;aspect-ratio:16/9;border-radius:4px;overflow:hidden;background:#000;">
                             <img src="<?= htmlspecialchars($video['thumbnail']) ?>"
-                                 style="width:100%;height:100%;object-fit:cover;" loading="lazy">
+                                 alt="<?= htmlspecialchars($video['title']) ?>"
+                                 style="width:100%;height:100%;object-fit:cover;"
+                                 loading="lazy"
+                                 decoding="async">
                         </div>
                     </a>
                     <div style="flex:1;min-width:0;">

@@ -5,7 +5,11 @@
     <div class="watch-main">
 
     <div class="video-player">
-        <video id="player" controls>
+        <video id="player"
+               controls
+               playsinline
+               preload="metadata"
+               poster="<?= htmlspecialchars($video['thumbnail']) ?>">
             <source src="<?= htmlspecialchars($video['src']) ?>" type="video/mp4">
         </video>
         <div class="quality-selector">
@@ -262,7 +266,9 @@
                 <a href="/watch?id=<?= $s['id'] ?>" class="suggested-card">
                     <div class="suggested-thumb">
                         <img src="<?= htmlspecialchars($s['thumbnail']) ?>"
-                             alt="<?= htmlspecialchars($s['title']) ?>">
+                             alt="<?= htmlspecialchars($s['title']) ?>"
+                             loading="lazy"
+                             decoding="async">
                         <span class="video-duration"><?= gmdate('i:s', $s['duration'] ?? 0) ?></span>
                     </div>
                     <div class="suggested-info">

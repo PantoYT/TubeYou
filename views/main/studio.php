@@ -63,7 +63,11 @@
         <!-- Thumbnail -->
         <div class="stcol stcol-thumb">
           <a href="/watch?id=<?= $v['id'] ?>">
-            <img src="<?= htmlspecialchars($v['thumbnail']) ?>" alt="" class="studio-thumb">
+            <img src="<?= htmlspecialchars($v['thumbnail']) ?>"
+                 alt="<?= htmlspecialchars($v['title']) ?>"
+                 class="studio-thumb"
+                 loading="lazy"
+                 decoding="async">
           </a>
         </div>
 

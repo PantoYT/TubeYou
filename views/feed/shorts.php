@@ -5,11 +5,14 @@
         <div class="alert alert-info">No shorts yet. Upload a video under 60 seconds!</div>
     <?php else: ?>
         <div class="shorts-grid">
-            <?php foreach ($videos as $video): ?>
+            <?php foreach ($videos as $index => $video): ?>
                 <a href="/watch?id=<?= $video['id'] ?>" class="short-card">
                     <div class="short-thumb">
                         <img src="<?= htmlspecialchars($video['thumbnail']) ?>"
-                             alt="<?= htmlspecialchars($video['title']) ?>">
+                             alt="<?= htmlspecialchars($video['title']) ?>"
+                             loading="<?= $index < 4 ? 'eager' : 'lazy' ?>"
+                             decoding="async"
+                             <?= $index === 0 ? 'fetchpriority="high"' : '' ?>>
                         <span class="video-duration"><?= gmdate('i:s', $video['duration'] ?? 0) ?></span>
                     </div>
                     <p class="short-title"><?= htmlspecialchars($video['title']) ?></p>

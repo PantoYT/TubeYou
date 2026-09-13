@@ -82,9 +82,15 @@ Cloudflare Tunnel powinien kierować właściwy hostname na:
 ## Firewall serwera
 
 Serwerowy łańcuch `DOCKER-USER` kończy się regułą `DROP`, która jest wykonywana
-przed `FLANNEL-FWD`. Zainstaluj `panto-fw-k3s.sh` jako
-`/usr/local/sbin/panto-fw-k3s.sh` i `panto-fwfix-k3s.conf` jako drop-in
-`/etc/systemd/system/panto-fwfix.service.d/k3s.conf`. Reguły przepuszczają ruch
-`cni0` między podami oraz wychodzący przez `bond0`; w kierunku odwrotnym wpuszczają
-wyłącznie pakiety `ESTABLISHED,RELATED`. Nowe połączenia z LAN/WAN do podów nadal
-kończą się na serwerowym `DROP`.
+przed `FLANNEL-FWD`. Bez wyjątku aplikacja nie połączy się z MySQL, Redisem ani
+CoreDNS-em. Instalacja jest idempotentna:
+
+```bash
+sudo bash deploy/install-firewall.sh
+```
+
+Skrypt instaluje `panto-fw-k3s.sh` oraz drop-in dla `panto-fwfix.service`.
+Reguły przepuszczają ruch `cni0` między podami oraz wychodzący przez `bond0`;
+w kierunku odwrotnym wpuszczają wyłącznie pakiety `ESTABLISHED,RELATED`. Nowe
+połączenia z LAN/WAN do podów nadal kończą się na serwerowym `DROP`. Pełny skrypt
+wdrożeniowy uruchamia ten instalator automatycznie.

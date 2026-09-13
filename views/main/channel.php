@@ -3,7 +3,11 @@
 <div class="channel-page">
     <div class="channel-banner">
         <?php if ($channel['banner'] ?? null): ?>
-            <img src="<?= htmlspecialchars($channel['banner']) ?>" alt="banner">
+            <img src="<?= htmlspecialchars($channel['banner']) ?>"
+                 alt="<?= htmlspecialchars($channel['displayName']) ?> channel banner"
+                 loading="eager"
+                 decoding="async"
+                 fetchpriority="high">
         <?php endif; ?>
     </div>
 
@@ -32,7 +36,9 @@
             <div class="video-card">
                 <a href="/watch?id=<?= $video['id'] ?>" class="video-thumbnail">
                     <img src="<?= htmlspecialchars($video['thumbnail']) ?>"
-                         alt="<?= htmlspecialchars($video['title']) ?>">
+                         alt="<?= htmlspecialchars($video['title']) ?>"
+                         loading="lazy"
+                         decoding="async">
                     <span class="video-duration"><?= gmdate('i:s', $video['duration'] ?? 0) ?></span>
                 </a>
                 <div class="video-info">
